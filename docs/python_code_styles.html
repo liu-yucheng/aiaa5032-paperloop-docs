@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Python code style | PaperLoop</title>
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html">Subagent contract</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="python_code_styles.html">Python</a>
+          <a href="typescript_code_styles.html">TypeScript</a>
+        </nav>
+      </div>
+    </header>
+    <main class="page">
+      <p class="eyebrow">Style reference</p>
+      <h1>Python code style</h1>
+      <p class="lede">
+        This page renders the reference file that all PaperLoop subagents follow.
+        The Markdown source is in <code>.refs/python-code-styles.md</code>.
+      </p>
+      <article class="markdown-body">
+<h1>Python Code Styles</h1>
+<ul>
+<li>Use Google Python Style as code style reference with the following exceptions.<ul>
+<li>Use &quot;smart&quot; line wrapping to improve sentence readability.</li>
+<li>Do not use &quot;dumb&quot; line wrapping that affects sentence readability.</li>
+<li>Each complete docstring sentence should occupy at 1 or more consecutive lines.</li>
+<li>Follow the custom line length limit.</li>
+<li>Follow the custom indentation rules.</li>
+</ul>
+</li>
+<li>Use ASD-STE-100 non-strict mode with academic US English fallback as natural language style reference.</li>
+<li>Use a soft line length limit of <code>[79, 119]</code>.<ul>
+<li>Use hard line wrapping when line length exceeds 119 characters.</li>
+<li>Use soft line wrapping to improve readability when line length is between 80 and 120.</li>
+</ul>
+</li>
+<li>Use 4-space indentation.<ul>
+<li>Use horizontally aligned hanging indents.</li>
+<li>Do not use vertically aligned indents.</li>
+</ul>
+</li>
+<li>Use complete and meaningful words to name things instead of short and confusing mathematical notations.<ul>
+<li>Long and clear names are better than single character names that makes no sense.</li>
+<li>Do not use overly abbreviated names.</li>
+</ul>
+</li>
+<li>Use <code>from ... import ...</code> and <code>from ... import ... as ...</code> wherever possible.</li>
+<li>Use <code>ruff</code> to organize imports.</li>
+</ul>
+
+      </article>
+    </main>
+  </body>
+</html>
