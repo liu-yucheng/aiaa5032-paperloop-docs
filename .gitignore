@@ -1,0 +1,18 @@
+# Copyright (C) 2026 The PaperLoop Team. Released under GNU AGPL 3.0 License.
+# GNU AGPL 3.0 License: https://www.gnu.org/licenses/agpl-3.0.txt .
+
+# [ Begin custom .gitignore . ]
+
+# Patterns starting with a dot.
+**/.*
+!**/.git*
+
+# VSCode custom configs.
+**/.vscode/
+
+# [ Begin custom .gitignore . ]
+
+# dsh-plugin-template .gitignore .
+node_modules/
+*.log
+.DS_Store
