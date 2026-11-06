@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TypeScript code style | PaperLoop</title>
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html">Subagent contract</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="python_code_styles.html">Python</a>
+          <a href="typescript_code_styles.html">TypeScript</a>
+        </nav>
+      </div>
+    </header>
+    <main class="page">
+      <p class="eyebrow">Style reference</p>
+      <h1>TypeScript code style</h1>
+      <p class="lede">
+        This page renders the reference file that all PaperLoop subagents follow.
+        The Markdown source is in <code>.refs/typescript-code-styles.md</code>.
+      </p>
+      <article class="markdown-body">
+<h1>TypeScript Code Styles</h1>
+<ul>
+<li>Use the <a href="https://google.github.io/styleguide/tsguide.html">Google TypeScript Style Guide</a>
+as the code style reference with the exceptions below.</li>
+<li>Use ASD-STE100 non-strict mode with academic US English fallback as the natural
+language style reference.</li>
+<li>Use a soft line length limit of <code>[79, 119]</code>.<ul>
+<li>Use hard line wrapping when a line is longer than 119 characters.</li>
+<li>Use soft line wrapping to improve readability when a line is 80 to 119 characters.</li>
+<li>Do not wrap a line at an arbitrary column when the wrap makes the code harder to read.</li>
+</ul>
+</li>
+<li>Use 2-space indentation.<ul>
+<li>Align a hanging indent horizontally with the expression that it continues.</li>
+<li>Do not use vertical alignment that depends on the width of adjacent tokens.</li>
+</ul>
+</li>
+<li>Use complete and meaningful words for names.<ul>
+<li>Prefer <code>reproductionReportPath</code> to <code>rrp</code>.</li>
+<li>Do not use short mathematical names unless the domain definition is unambiguous.</li>
+</ul>
+</li>
+<li>Use <code>const</code> by default. Use <code>let</code> only when the binding changes. Do not use <code>var</code>.</li>
+<li>Use explicit return types on exported functions and public methods.<ul>
+<li>Annotate a local function when inference is not obvious.</li>
+<li>Do not annotate a local variable when the initializer already states the type.</li>
+</ul>
+</li>
+<li>Use <code>unknown</code> at an input boundary. Narrow it with a type guard before use.<ul>
+<li>Do not use <code>any</code>.</li>
+<li>Do not use a non-null assertion unless a previous check proves the value.</li>
+</ul>
+</li>
+<li>Use discriminated unions for values with a closed set of shapes.<ul>
+<li>Handle every variant in a <code>switch</code> statement.</li>
+<li>Use an <code>assertNever</code> helper in the default branch.</li>
+</ul>
+</li>
+<li>Use <code>readonly</code> for data that must not change after construction.<ul>
+<li>Use <code>ReadonlyArray&lt;T&gt;</code> or <code>readonly T[]</code> for arrays that the callee must not mutate.</li>
+</ul>
+</li>
+<li>Use <code>import type</code> for type-only imports.<ul>
+<li>Use named imports. Use a default import only when the module exports a default.</li>
+<li>Order imports in this sequence: Node.js built-ins, external packages, internal
+modules, relative modules, type-only imports.</li>
+<li>Use one import statement for each module.</li>
+<li>Include the <code>.js</code> extension in a relative import when the project uses NodeNext
+module resolution.</li>
+</ul>
+</li>
+<li>Use <code>async</code> and <code>await</code> for asynchronous code.<ul>
+<li>Do not leave a floating promise. Await it or attach an explicit handler.</li>
+<li>Pass an <code>AbortSignal</code> through every layer that can wait.</li>
+<li>Use <code>Promise.all</code> only when the operations are independent. Use a sequential
+loop when one operation must finish before the next one starts.</li>
+</ul>
+</li>
+<li>Handle an error at the layer that can act on it.<ul>
+<li>Preserve the original error with <code>cause</code> when you wrap it.</li>
+<li>Do not use an empty <code>catch</code> block.</li>
+<li>Return a typed error result at a boundary that must not throw.</li>
+</ul>
+</li>
+<li>Use a small, single-purpose module.<ul>
+<li>A module must not import the plugin entry point.</li>
+<li>A module that reads files must accept a path or a resolved layout object.</li>
+<li>A module that formats text must not write files.</li>
+</ul>
+</li>
+<li>Write a documentation comment for every exported function, class, and type.<ul>
+<li>Use a complete sentence.</li>
+<li>Explain the contract, the important side effects, and the failure mode.</li>
+<li>Do not repeat the function name as a sentence.</li>
+</ul>
+</li>
+<li>Write a comment only when the code cannot state the reason.<ul>
+<li>Explain why the code does something, not what the syntax does.</li>
+<li>Keep a comment close to the code that it describes.</li>
+</ul>
+</li>
+<li>Use <code>JSON.stringify(value, null, 2) + &quot;\n&quot;</code> for a generated JSON file.</li>
+<li>Use an atomic write for a file that another process can read: write a temporary
+file in the same directory, then rename it over the target.</li>
+<li>Use a JSON schema with property-level <code>required: true</code> for a DeepSeek Harness tool
+parameter.<ul>
+<li>Do not use a top-level <code>required</code> array for a tool parameter schema.</li>
+<li>Use <code>additionalProperties: false</code> on every generated object schema.</li>
+<li>Use <code>oneOf: [{ ... }, { type: &quot;null&quot; }]</code> for a nullable output field.</li>
+</ul>
+</li>
+<li>Use the standard JSON Schema form for a subagent <code>outputSchema</code>:
+<code>{ &quot;type&quot;: &quot;object&quot;, &quot;required&quot;: [...], &quot;properties&quot;: { ... } }</code>.</li>
+<li>Do not use TypeScript <code>enum</code> or <code>namespace</code>.<ul>
+<li>Use a union of string literals and a constant object instead.</li>
+<li>This keeps the source compatible with Node.js type stripping.</li>
+</ul>
+</li>
+<li>Do not use a decorator unless the framework requires it.</li>
+<li>Do not use <code>console.log</code> in library code.<ul>
+<li>Use the injected logger.</li>
+<li>Use <code>console.log</code> only in a command-line script or a self-test.</li>
+</ul>
+</li>
+<li>Use <code>node:test</code> and <code>node:assert/strict</code> for a unit test.<ul>
+<li>Test a pure function with a table of inputs when the cases are similar.</li>
+<li>Test a file workflow in a temporary directory.</li>
+<li>Do not mock the file system when a temporary directory is enough.</li>
+</ul>
+</li>
+</ul>
+
+      </article>
+    </main>
+  </body>
+</html>

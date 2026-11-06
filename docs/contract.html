@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PaperLoop subagent contract</title>
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html" aria-current="page">Subagent contract</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="python_code_styles.html">Python</a>
+          <a href="typescript_code_styles.html">TypeScript</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <p class="eyebrow">PaperLoop contract</p>
+      <h1>Subagent contract</h1>
+      <p class="lede">
+        This page defines the files and directories that each PaperLoop stage
+        reads, writes, and hands to the next stage. The plugin owns the sequence.
+        A subagent owns only the files in its write column.
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>One writer rule.</strong> A path in an output column has one
+          producing stage. Every later stage opens that path read-only. A later
+          stage must not repair or rewrite an earlier output. If an earlier
+          output is wrong, the producing stage must return RETRY.
+        </p>
+      </div>
+
+      <h2>Path symbols</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;app-data&gt;</code></td>
+            <td>
+              The app-data root. The default is
+              <code>~/.dsh-aiaa5032-paperloop</code>. The plugin setting or the
+              <code>app_data</code> argument can select another directory. An
+              absolute path may be outside the session workspace. The plugin
+              copies the packaged <code>default_app_data</code> seed into an
+              absent or empty directory.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;</code></td>
+            <td>
+              The reproduction workspace. The default is
+              <code>&lt;app-data&gt;/workspace</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>N</code></td>
+            <td>
+              The latest read-only configuration version. The core reads
+              <code>configs_ro/vN</code>. The packaged seed starts at
+              <code>v0</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>K</code></td>
+            <td>
+              The latest read-write configuration version. All five subagents
+              read their own <code>configs_rw/vK/&lt;subagent&gt;/config.json</code>.
+              The packaged seed starts at <code>v0</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>E</code></td>
+            <td>
+              The evaluation version of the current run. The Evaluator writes
+              <code>evals/vE</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>K+1</code></td>
+            <td>
+              The next configuration revision. The Evolver writes
+              <code>configs_rw/v(K+1)</code>.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Core inputs for every stage</h2>
+      <p>
+        These files are read-only for every subagent. The plugin or a human
+        writes them before the run.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Writer</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;app-data&gt;/input.json</code></td>
+            <td>Plugin</td>
+            <td>
+              Names the paper, the repository, the workspace, and the report
+              language.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;app-data&gt;/paper/&lt;paper-file&gt;</code></td>
+            <td>Plugin</td>
+            <td>
+              The uploaded paper. The Runtime stage copies it into the
+              workspace.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;app-data&gt;/configs_ro/vN/rsi.json</code></td>
+            <td>Human or plugin</td>
+            <td>
+              The evaluation gates, the retry limit, the code time limit, the
+              stage time limits, and the targets. This file is read-only by
+              policy.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;app-data&gt;/configs_ro/vN/paperloop.json</code></td>
+            <td>Human or plugin</td>
+            <td>
+              The provider, the report geometry, the audit limits, and the
+              report language.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>&lt;app-data&gt;/configs_rw/vK/&lt;subagent&gt;/config.json</code>
+            </td>
+            <td>Evolver or plugin</td>
+            <td>
+              The prompt, the sampling parameters, the skills, the tools, and
+              the memories of one subagent. A subagent reads only its own file.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="stage-time-limits">Stage time limits</h2>
+      <p>
+        Each stage has one explicit time limit in seconds. The limit is a float.
+        The plugin stops the stage when the limit expires and records a
+        <code>STAGE_TIMEOUT</code> result. The plugin resolves the limit in this
+        order: the plugin setting, then <code>stageTimeLimitSeconds</code> in
+        <code>configs_ro/vN/rsi.json</code>, then the built-in default.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Setting key</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1. runtime</td><td><code>stageRuntimeSeconds</code></td><td>600 seconds</td></tr>
+          <tr><td>2. reprod_code</td><td><code>stageReproductionCodeSeconds</code></td><td>600 seconds</td></tr>
+          <tr><td>3. reprod_report</td><td><code>stageReproductionReportSeconds</code></td><td>600 seconds</td></tr>
+          <tr><td>4. innov_code</td><td><code>stageInnovationCodeSeconds</code></td><td>600 seconds</td></tr>
+          <tr><td>5. innov_report</td><td><code>stageInnovationReportSeconds</code></td><td>600 seconds</td></tr>
+          <tr><td>6. self_eval</td><td><code>stageSelfEvaluationSeconds</code></td><td>300 seconds</td></tr>
+          <tr><td>7. self_evolve</td><td><code>stageSelfEvolutionSeconds</code></td><td>300 seconds</td></tr>
+        </tbody>
+      </table>
+      <p>
+        A plugin setting of 0 means "use the read-only value". The Evolver
+        cannot change a stage time limit. The stage time limit is not the code
+        time limit: <code>codeTimeLimitSeconds</code> bounds one code run, and a
+        stage time limit bounds the whole stage.
+      </p>
+
+      <h2 id="runtime">1. runtime: Runtime subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/runtime/config.json</code>. Purpose: make the
+        original code run with the smallest possible change. Copy the paper into
+        the workspace.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Plugin</td>
+            <td><code>&lt;app-data&gt;/input.json</code></td>
+            <td>Read the paper path, the repository, and the language.</td>
+          </tr>
+          <tr>
+            <td>Plugin</td>
+            <td><code>&lt;app-data&gt;/paper/&lt;paper-file&gt;</code></td>
+            <td>Read the uploaded paper. Copy this file into the workspace.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>&lt;app-data&gt;/configs_ro/vN/rsi.json</code></td>
+            <td>Read the code time limit, the stage time limits, and the retry policy.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>&lt;app-data&gt;/configs_ro/vN/paperloop.json</code></td>
+            <td>Read the provider and the language.</td>
+          </tr>
+          <tr>
+            <td>Evolver or plugin</td>
+            <td><code>&lt;app-data&gt;/configs_rw/vK/runtime/config.json</code></td>
+            <td>Read the runtime prompt and its parameters.</td>
+          </tr>
+          <tr>
+            <td>Human</td>
+            <td>Repository URL or local path</td>
+            <td>Read the original code from this location.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;workspace&gt;/original/paper/</code></td>
+            <td>Write the paper copy here. Keep the original file name.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/original/code/source/</code></td>
+            <td>
+              Clone or copy the source into the source directory. Make minimal
+              repairs. Keep every change small and recorded.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/original/code/source/.venv/</code></td>
+            <td>Create the <code>uv</code> environment here when the tool uses it.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Coder, Researcher</td>
+            <td><code>&lt;workspace&gt;/original/code/source/**</code></td>
+            <td>The runnable original source and the repaired environment.</td>
+          </tr>
+          <tr>
+            <td>Coder, Researcher</td>
+            <td><code>&lt;workspace&gt;/original/code/RUNTIME_NOTES.md</code></td>
+            <td>
+              The exact command, the run time, the device, and every
+              modification.
+            </td>
+          </tr>
+          <tr>
+            <td>Coder, Researcher</td>
+            <td><code>&lt;workspace&gt;/original/paper/&lt;paper-file&gt;</code></td>
+            <td>
+              A byte copy of the uploaded paper. Later stages read this copy.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="reprod-code">2. reprod_code: Coder subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/coder/config.json</code>. Purpose: turn the
+        repaired source into readable reproduction code and produce the main
+        result.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/code/source/</code></td>
+            <td>Read the runnable source. Do not change it.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/code/RUNTIME_NOTES.md</code></td>
+            <td>Read the command, the device, and the known defects.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/paper/</code></td>
+            <td>Read the paper for the target value and the method.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>configs_ro/vN/rsi.json</code> and <code>paperloop.json</code></td>
+            <td>Read the time limits, the targets, and the language.</td>
+          </tr>
+          <tr>
+            <td>Evolver or plugin</td>
+            <td><code>configs_rw/vK/coder/config.json</code></td>
+            <td>Read the coder prompt and its parameters.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;workspace&gt;/reproduction/code/source/</code></td>
+            <td>
+              Write the refactored code, the entry point, and the tests.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/reproduction/code/</code></td>
+            <td>
+              Write <code>run_manifest.json</code> in the code root, not in
+              <code>source/</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/reproduction/code/output/</code></td>
+            <td>Write every run output, log, table, and metric file here.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Researcher, innovation Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/source/**</code></td>
+            <td>Readable code with one documented entry point.</td>
+          </tr>
+          <tr>
+            <td>Researcher, innovation Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/run_manifest.json</code></td>
+            <td>
+              The command, the seed, the device, the run time, the output files,
+              the parity value, and the relative gap.
+            </td>
+          </tr>
+          <tr>
+            <td>Researcher, innovation Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/output/**</code></td>
+            <td>At least one output file that supports the main result.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="reprod-report">3. reprod_report: Researcher subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/researcher/config.json</code>. Purpose: write
+        the critical reproduction report and compile it.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/source/</code></td>
+            <td>Read the method, the entry point, and the manifest.</td>
+          </tr>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/output/</code></td>
+            <td>Read the evidence for each paper claim.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/paper/</code></td>
+            <td>Read the paper and its reported values.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/code/RUNTIME_NOTES.md</code></td>
+            <td>Read the environment history and the repairs.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>configs_ro/vN/rsi.json</code> and <code>paperloop.json</code></td>
+            <td>Read the report geometry, the language, and the limits.</td>
+          </tr>
+          <tr>
+            <td>Evolver or plugin</td>
+            <td><code>configs_rw/vK/researcher/config.json</code></td>
+            <td>Read the researcher prompt and its parameters.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;workspace&gt;/reproduction/report/</code></td>
+            <td>Write <code>report.typ</code> and <code>report.pdf</code>.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/reproduction/report/media/</code></td>
+            <td>
+              Write each generated PNG and the Python script that produced it.
+              Keep each image at or below 3840 by 3840 pixels.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Evaluator, innovation Coder, innovation Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/report.typ</code></td>
+            <td>
+              The Typst source. It names each claim, its evidence, and the
+              verdict. It includes limitations and future work.
+            </td>
+          </tr>
+          <tr>
+            <td>Evaluator, innovation Coder, innovation Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/report.pdf</code></td>
+            <td>A compiled PDF that opens and contains every figure and table.</td>
+          </tr>
+          <tr>
+            <td>Evaluator, innovation Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/media/**</code></td>
+            <td>Valid images with a Python source for each image.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="innov-code">4. innov_code: Coder subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/coder/config.json</code>. Purpose: test one
+        limitation or future-work item with the smallest experiment.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/report.pdf</code></td>
+            <td>Read the limitations and future work. Pick one item.</td>
+          </tr>
+          <tr>
+            <td>Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/report.typ</code></td>
+            <td>Read the exact claim and the evidence gap.</td>
+          </tr>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/source/</code></td>
+            <td>Read the reproduction method. Do not change it.</td>
+          </tr>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/reproduction/code/output/</code></td>
+            <td>Read the baseline result and the baseline seed.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/paper/</code></td>
+            <td>Read the paper for the scope of the claim.</td>
+          </tr>
+          <tr>
+            <td>Core and Evolver</td>
+            <td><code>configs_ro/vN/*.json</code> and <code>configs_rw/vK/coder/config.json</code></td>
+            <td>Read the limits and the coder prompt.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;workspace&gt;/innovation/code/source/</code></td>
+            <td>
+              Write the experiment code. State the hypothesis in one sentence.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/innovation/code/</code></td>
+            <td>
+              Write <code>run_manifest.json</code> in the code root, not in
+              <code>source/</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/innovation/code/output/</code></td>
+            <td>Write every output, log, and metric file.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Researcher, Evaluator</td>
+            <td><code>&lt;workspace&gt;/innovation/code/source/**</code></td>
+            <td>The experiment code. It does not modify the reproduction code.</td>
+          </tr>
+          <tr>
+            <td>Researcher, Evaluator</td>
+            <td><code>&lt;workspace&gt;/innovation/code/run_manifest.json</code></td>
+            <td>
+              The hypothesis, the command, the seed, the device, the run time,
+              and the output files.
+            </td>
+          </tr>
+          <tr>
+            <td>Researcher, Evaluator</td>
+            <td><code>&lt;workspace&gt;/innovation/code/output/**</code></td>
+            <td>At least one output file. A negative result is valid.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="innov-report">5. innov_report: Researcher subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/researcher/config.json</code>. Purpose:
+        write the innovation report and state the limit of the evidence.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/innovation/code/source/</code></td>
+            <td>Read the experiment method and the manifest.</td>
+          </tr>
+          <tr>
+            <td>Coder</td>
+            <td><code>&lt;workspace&gt;/innovation/code/output/</code></td>
+            <td>Read the measured result.</td>
+          </tr>
+          <tr>
+            <td>Researcher</td>
+            <td><code>&lt;workspace&gt;/reproduction/report/</code></td>
+            <td>Read the reproduction conclusion and the chosen limitation.</td>
+          </tr>
+          <tr>
+            <td>Runtime</td>
+            <td><code>&lt;workspace&gt;/original/paper/</code></td>
+            <td>Read the original claim.</td>
+          </tr>
+          <tr>
+            <td>Core and Evolver</td>
+            <td><code>configs_ro/vN/*.json</code> and <code>configs_rw/vK/researcher/config.json</code></td>
+            <td>Read the report rules and the researcher prompt.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;workspace&gt;/innovation/report/</code></td>
+            <td>Write <code>report.typ</code> and <code>report.pdf</code>.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;workspace&gt;/innovation/report/media/</code></td>
+            <td>Write each generated PNG and its Python source.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Evaluator, Evolver</td>
+            <td><code>&lt;workspace&gt;/innovation/report/report.typ</code></td>
+            <td>
+              The Typst source. It states what the experiment proves and what it
+              does not prove.
+            </td>
+          </tr>
+          <tr>
+            <td>Evaluator, Evolver</td>
+            <td><code>&lt;workspace&gt;/innovation/report/report.pdf</code></td>
+            <td>A compiled PDF with every figure and table.</td>
+          </tr>
+          <tr>
+            <td>Evaluator, Evolver</td>
+            <td><code>&lt;workspace&gt;/innovation/report/media/**</code></td>
+            <td>Valid images with a Python source for each image.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="self-eval">6. self_eval: Evaluator subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/evaluator/config.json</code>. Purpose: score
+        the seven stage attempts with the recorded evidence. This stage runs only
+        when <code>rsi.json</code> enables self-evaluation.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Plugin</td>
+            <td><code>&lt;app-data&gt;/state/current.json</code></td>
+            <td>Read the stage records, the attempts, and the interventions.</td>
+          </tr>
+          <tr>
+            <td>Plugin and all stages</td>
+            <td><code>&lt;app-data&gt;/history/&lt;timestamp&gt;/*.json</code></td>
+            <td>Read the attempt history, the child session ids, and the errors.</td>
+          </tr>
+          <tr>
+            <td>Runtime to Researcher</td>
+            <td><code>&lt;workspace&gt;/original/**</code>, <code>reproduction/**</code>, <code>innovation/**</code></td>
+            <td>Read every stage output as evidence. Do not change it.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>configs_ro/vN/rsi.json</code></td>
+            <td>Read the targets, the weights, and the rubric policy.</td>
+          </tr>
+          <tr>
+            <td>Evolver or plugin</td>
+            <td><code>configs_rw/vK/evaluator/config.json</code></td>
+            <td>Read the evaluator prompt and its parameters.</td>
+          </tr>
+          <tr>
+            <td>Previous Evaluator</td>
+            <td><code>&lt;app-data&gt;/evals/v(E-1)/</code></td>
+            <td>Read the earlier rubric. Append only. Do not rewrite it.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;app-data&gt;/evals/vE/</code></td>
+            <td>
+              Write the evaluation for this run. Use the exact directory in the
+              stage note.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Evolver, human</td>
+            <td><code>&lt;app-data&gt;/evals/vE/evals.json</code></td>
+            <td>
+              One record for each agent-task pair with a score, a reason, and an
+              uncertainty marker.
+            </td>
+          </tr>
+          <tr>
+            <td>Evolver, human</td>
+            <td><code>&lt;app-data&gt;/evals/vE/evals.md</code></td>
+            <td>The same evaluation in readable form. It names the weak stage.</td>
+          </tr>
+          <tr>
+            <td>Evolver, human</td>
+            <td><code>&lt;app-data&gt;/evals/vE/rubrics.json</code></td>
+            <td>An append-only rubric. An earlier entry is immutable.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout--warn">
+        <p>
+          The plugin also writes <code>scores.json</code> and
+          <code>scores.md</code> into the same evaluation directory. Those two
+          files are a deterministic audit. The Evaluator must not edit them.
+        </p>
+      </div>
+
+      <h2 id="self-evolve">7. self_evolve: Evolver subagent</h2>
+      <p class="stage-meta">
+        Config: <code>configs_rw/vK/evolver/config.json</code>. Purpose: propose
+        one controlled configuration change for the next revision. This stage
+        runs only when both self-evaluation and self-evolution are enabled.
+      </p>
+      <h3>Input: read-only</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Path</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Evaluator</td>
+            <td><code>&lt;app-data&gt;/evals/vE/</code></td>
+            <td>Read the scores, the reasons, and the weak stage.</td>
+          </tr>
+          <tr>
+            <td>Plugin</td>
+            <td><code>&lt;app-data&gt;/state/current.json</code></td>
+            <td>Read the stage records and the interventions.</td>
+          </tr>
+          <tr>
+            <td>All subagents</td>
+            <td><code>&lt;app-data&gt;/configs_rw/vK/</code></td>
+            <td>Read the five current configurations.</td>
+          </tr>
+          <tr>
+            <td>Core</td>
+            <td><code>&lt;app-data&gt;/configs_ro/vN/</code></td>
+            <td>
+              Read the time limits, the targets, and the integrity rules. This
+              directory is immutable.
+            </td>
+          </tr>
+          <tr>
+            <td>Runtime to Researcher</td>
+            <td><code>&lt;workspace&gt;/**</code></td>
+            <td>Read the artifacts that support or contradict the weakness.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Workspace: read-write</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;app-data&gt;/configs_rw/v(K+1)/</code></td>
+            <td>
+              Write one new revision. Do not edit <code>vK</code> or
+              <code>configs_ro</code>.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Output: write-only for this stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Consumer</th>
+            <th>Path</th>
+            <th>Contract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Next run, human</td>
+            <td><code>configs_rw/v(K+1)/&lt;subagent&gt;/config.json</code></td>
+            <td>
+              The updated configuration with the prompt, the parameters, the
+              skills, the tools, and the memories.
+            </td>
+          </tr>
+          <tr>
+            <td>Next run, human</td>
+            <td><code>configs_rw/v(K+1)/&lt;subagent&gt;/prompt.md</code></td>
+            <td>A readable rendering of the same configuration.</td>
+          </tr>
+          <tr>
+            <td>Human</td>
+            <td><code>configs_rw/v(K+1)/EVOLUTION.md</code></td>
+            <td>
+              The measured weakness, the change, the reason, the expected
+              effect, and the keep-or-revert decision.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Handoff rules</h2>
+      <ul>
+        <li>
+          A stage reads only its input column and writes only its workspace and
+          output columns.
+        </li>
+        <li>
+          A stage does not edit an earlier output. It reports a defect with
+          RETRY and names the file.
+        </li>
+        <li>
+          A BLOCKED result stops the run and records one human intervention. The
+          plugin does not invent the missing input.
+        </li>
+        <li>
+          The Runtime paper copy is the single paper source for later stages.
+          Later stages do not read the app-data paper file again.
+        </li>
+        <li>
+          The read-only configuration is selected from the latest
+          <code>configs_ro/vN</code>. The Evolver never writes to that tree.
+        </li>
+        <li>
+          The plugin validates the required artifacts after each attempt. A
+          missing artifact turns an OK result into RETRY.
+        </li>
+      </ul>
+
+      <p>
+        Return to the <a href="index.html">API reference</a>.
+      </p>
+    </main>
+  </body>
+</html>
