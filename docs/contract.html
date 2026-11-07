@@ -191,6 +191,36 @@
         stage time limit bounds the whole stage.
       </p>
 
+      <h2 id="temporary-files">Temporary files</h2>
+      <p>These rules apply to every stage and every subagent.</p>
+      <ul>
+        <li>
+          Write a temporary file only under a directory whose basename starts
+          with a dot. The target path must match <code>**/.*/</code>. Use an
+          existing dot directory or create one, for example
+          <code>&lt;workspace&gt;/.tmp/</code>.
+        </li>
+        <li>
+          Do not write a temporary file at the workspace root or in an input or
+          output directory.
+        </li>
+        <li>
+          Before the stage returns, delete every temporary file and every
+          temporary directory that the subagent created. This cleanup includes
+          every <code>**/.venv/</code> directory.
+        </li>
+        <li>
+          Keep the required artifacts. A required artifact is not a temporary
+          file.
+        </li>
+      </ul>
+      <p>
+        A temporary file is a scratch copy, a log, a cache, a downloaded
+        archive, a virtual environment, or an intermediate data file. It is not
+        a stage deliverable. A later stage that needs a Python environment
+        recreates it, uses it, and deletes it before that stage returns.
+      </p>
+
       <h2 id="runtime">1. runtime: Runtime subagent</h2>
       <p class="stage-meta">
         Config: <code>configs_rw/vK/runtime/config.json</code>. Purpose: make the
@@ -261,7 +291,10 @@
           </tr>
           <tr>
             <td><code>&lt;workspace&gt;/original/code/source/.venv/</code></td>
-            <td>Create the <code>uv</code> environment here when the tool uses it.</td>
+            <td>
+              Create the <code>uv</code> environment here when the tool uses it.
+              This directory is temporary. Delete it before the stage returns.
+            </td>
           </tr>
         </tbody>
       </table>
@@ -278,7 +311,7 @@
           <tr>
             <td>Coder, Researcher</td>
             <td><code>&lt;workspace&gt;/original/code/source/**</code></td>
-            <td>The runnable original source and the repaired environment.</td>
+            <td>The runnable original source and the recorded environment repairs.</td>
           </tr>
           <tr>
             <td>Coder, Researcher</td>
@@ -701,8 +734,9 @@
       <h2 id="self-eval">6. self_eval: Evaluator subagent</h2>
       <p class="stage-meta">
         Config: <code>configs_rw/vK/evaluator/config.json</code>. Purpose: score
-        the seven stage attempts with the recorded evidence. This stage runs only
-        when <code>rsi.json</code> enables self-evaluation.
+        stages 1 to 5 with the recorded evidence, including the token cost
+        efficiency. This stage runs only when <code>rsi.json</code> enables
+        self-evaluation.
       </p>
       <h3>Input: read-only</h3>
       <table>
@@ -717,7 +751,10 @@
           <tr>
             <td>Plugin</td>
             <td><code>&lt;app-data&gt;/state/current.json</code></td>
-            <td>Read the stage records, the attempts, and the interventions.</td>
+            <td>
+              Read the stage records, the attempts with the reported
+              <code>tokenUsage</code>, and the interventions.
+            </td>
           </tr>
           <tr>
             <td>Plugin and all stages</td>
@@ -779,7 +816,7 @@
             <td><code>&lt;app-data&gt;/evals/vE/evals.json</code></td>
             <td>
               One record for each agent-task pair with a score, a reason, and an
-              uncertainty marker.
+              uncertainty marker. It also reports the token cost efficiency.
             </td>
           </tr>
           <tr>
@@ -794,6 +831,35 @@
           </tr>
         </tbody>
       </table>
+      <h3>Token cost efficiency</h3>
+      <p>
+        Token cost efficiency (TCE) is the number of completed agent-task pairs
+        per one million billed tokens.
+      </p>
+      <ul>
+        <li>
+          A pair is complete when its completion score is at least 3 of 5.
+        </li>
+        <li>
+          Billed tokens are the input tokens, the cache read tokens, the cache
+          write tokens, and the output tokens. Reasoning tokens are a subset of
+          the output tokens, so do not add them again.
+        </li>
+        <li>
+          Sum <code>tokenUsage.totalTokens</code> over every attempt of stages 1
+          to 5. Divide the completed-pair count by the token total. Multiply by
+          one million.
+        </li>
+        <li>
+          Write <code>tokenCostEfficiency</code> in <code>evals.json</code> with
+          the value, the unit, the completed-pair count, the total-pair count,
+          and the token total. Write the same value in <code>evals.md</code>.
+        </li>
+        <li>
+          Do not estimate a token count. If no attempt has a token count, write
+          <code>null</code> and state that the count is unavailable.
+        </li>
+      </ul>
       <div class="callout callout--warn">
         <p>
           The plugin also writes <code>scores.json</code> and
@@ -921,6 +987,11 @@
         <li>
           The read-only configuration is selected from the latest
           <code>configs_ro/vN</code>. The Evolver never writes to that tree.
+        </li>
+        <li>
+          A stage keeps every temporary file under a directory that matches
+          <code>**/.*/</code>. It deletes every temporary file and every
+          <code>**/.venv/</code> directory before it returns.
         </li>
         <li>
           The plugin validates the required artifacts after each attempt. A

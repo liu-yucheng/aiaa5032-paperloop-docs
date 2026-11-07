@@ -13,7 +13,7 @@
 <h1>Interface ToolDefinition</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">ToolDefinition</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#name">name</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#description">description</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#parameters">parameters</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#output">output</a><span class="tsd-signature-symbol">:</span> <a href="dsh.ToolOutputDefinition.html" class="tsd-signature-type tsd-kind-interface">ToolOutputDefinition</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#execute-1">execute</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">exec</span><span class="tsd-signature-symbol">:</span> <a href="dsh.ToolRunContext.html" class="tsd-signature-type tsd-kind-interface">ToolRunContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#timeoutms">timeoutMs</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#isconcurrencysafe-1">isConcurrencySafe</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#presentcall-1">presentCall</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/dsh.ToolCallView.html" class="tsd-signature-type tsd-kind-type-alias">ToolCallView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#presentresult-1">presentResult</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">:</span> <a href="dsh.ToolResult.html" class="tsd-signature-type tsd-kind-interface">ToolResult</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="dsh.GenericResultView.html" class="tsd-signature-type tsd-kind-interface">GenericResultView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:127</li></ul></aside>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L152">dsh.ts:152</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -41,27 +41,27 @@
 <h3 class="tsd-anchor-link" id="name"><code class="tsd-tag">Readonly</code><span>name</span><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:128</li></ul></aside></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L153">dsh.ts:153</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="description"><code class="tsd-tag">Readonly</code><span>description</span><a href="#description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:129</li></ul></aside></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L154">dsh.ts:154</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="parameters"><code class="tsd-tag">Readonly</code><span>parameters</span><a href="#parameters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">parameters</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:130</li></ul></aside></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L155">dsh.ts:155</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="output"><code class="tsd-tag">Readonly</code><span>output</span><a href="#output" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">output</span><span class="tsd-signature-symbol">:</span> <a href="dsh.ToolOutputDefinition.html" class="tsd-signature-type tsd-kind-interface">ToolOutputDefinition</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:131</li></ul></aside></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L156">dsh.ts:156</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="timeoutms"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>timeout<wbr/>Ms</span><a href="#timeoutms" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">timeoutMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:133</li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L158">dsh.ts:158</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -78,7 +78,7 @@
 <li><span><span class="tsd-kind-parameter">exec</span>: <a href="dsh.ToolRunContext.html" class="tsd-signature-type tsd-kind-interface">ToolRunContext</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:132</li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L157">dsh.ts:157</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isconcurrencysafe"><code class="tsd-tag">Optional</code><span>is<wbr/>Concurrency<wbr/>Safe</span><a href="#isconcurrencysafe" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -91,7 +91,7 @@
 <li><span><span class="tsd-kind-parameter">args</span>: <span class="tsd-signature-type">unknown</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:134</li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L159">dsh.ts:159</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="presentcall"><code class="tsd-tag">Optional</code><span>present<wbr/>Call</span><a href="#presentcall" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -104,7 +104,7 @@
 <li><span><span class="tsd-kind-parameter">args</span>: <span class="tsd-signature-type">unknown</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/dsh.ToolCallView.html" class="tsd-signature-type tsd-kind-type-alias">ToolCallView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:135</li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L160">dsh.ts:160</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="presentresult"><code class="tsd-tag">Optional</code><span>present<wbr/>Result</span><a href="#presentresult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -118,7 +118,7 @@
 <li><span><span class="tsd-kind-parameter">result</span>: <a href="dsh.ToolResult.html" class="tsd-signature-type tsd-kind-interface">ToolResult</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="dsh.GenericResultView.html" class="tsd-signature-type tsd-kind-interface">GenericResultView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in dsh.ts:136</li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paper-loop/blob/35c154f01590df032be43f49b4d2131c54572c96/src/dsh.ts#L161">dsh.ts:161</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
