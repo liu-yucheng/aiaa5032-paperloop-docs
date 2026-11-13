@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PaperLoop changelog</title>
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html">Subagent contract</a>
+          <a href="changelog.html" aria-current="page">Changelog</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="python_code_styles.html">Python</a>
+          <a href="typescript_code_styles.html">TypeScript</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <p class="eyebrow">Release notes</p>
+      <h1>Changelog</h1>
+      <p class="lede">
+        This page records the user-visible change of each version. Release dates
+        follow the Git tags. The 0.5.0 entry is the unreleased working version.
+        The plugin version is also in <code>src/constants.ts</code> and
+        <code>package.json</code>.
+      </p>
+
+      <article class="release">
+        <h2 id="v0-5-0">0.5.0 (unreleased)</h2>
+        <p class="release-date">Working version, 12 November 2026</p>
+        <p>
+          This release cuts a full forward pass to 30 minutes. It also replaces
+          the setup/run interface with a forward pass and a backward pass.
+        </p>
+
+        <h3>Human interface</h3>
+        <ul>
+          <li>
+            The plugin now uses the current DeepSeek Harness session workspace
+            as the PaperLoop workspace. The separate workspace setting and the
+            <code>paperloop_setup</code> tool are removed.
+          </li>
+          <li>
+            <code>/paperloop</code> is the main command. It takes the
+            <code>forward</code> or <code>backward</code> action.
+          </li>
+          <li>
+            <code>/paperloop_forward</code> asks for one or more paper PDF
+            files. Each valid paper runs stages 1 to 6 in its own sub-workspace
+            <code>&lt;workspace&gt;/&lt;paper_stem&gt;/</code>.
+          </li>
+          <li>
+            <code>/paperloop_backward</code> lists the sessions with a pending
+            evolution plan. The user selects one or more sessions. Only this
+            action updates <code>configs_rw/</code>.
+          </li>
+          <li>
+            An empty selection exits with no file change. The plugin returns the
+            question as command text, because a command cannot prompt
+            interactively.
+          </li>
+          <li>
+            The tools are now <code>paperloop_forward</code>,
+            <code>paperloop_backward</code>, <code>paperloop_status</code>,
+            <code>paperloop_audit</code>, and <code>paperloop_config</code>.
+          </li>
+        </ul>
+
+        <h3>Time and scale</h3>
+        <ul>
+          <li>
+            The seven stage limits are 300, 300, 300, 240, 240, 180, and 120
+            seconds. The sum is 28 minutes.
+          </li>
+          <li>
+            Runtime and Coder no longer run a full-scale or a reduced-scale
+            experiment. They run one minimal setup that must finish in 30
+            seconds or less.
+          </li>
+          <li>
+            A main script accepts one scale flag:
+            <code>--minimal-scale</code> (default, 30 seconds or less),
+            <code>--reduced-scale</code> (5 minutes or less), or
+            <code>--full-scale</code> (no limit). A human user runs the last two
+            flags after the session ends.
+          </li>
+          <li>
+            Runtime and Coder do not produce or reproduce a computational
+            result. A minimal run proves that the code runs without a bug.
+          </li>
+          <li>
+            <code>rsi.json</code> replaces <code>codeTimeLimitSeconds</code>
+            with <code>minimalScaleSeconds</code>,
+            <code>reducedScaleSeconds</code>, and <code>fullScaleSeconds</code>.
+          </li>
+        </ul>
+
+        <h3>Stages</h3>
+        <ul>
+          <li>
+            The stage identifiers are now <code>runtime_setup</code>,
+            <code>reproduction_code</code>, <code>reproduction_report</code>,
+            <code>innovation_code</code>, <code>innovation_report</code>,
+            <code>self_eval</code>, and <code>self_evolve</code>.
+          </li>
+          <li>
+            The Researcher writes the innovation direction into
+            <code>reproduction/report/report.typ</code> and
+            <code>report.pdf</code>. The direction comes from the limitations
+            and the future work in the original paper.
+          </li>
+          <li>
+            The Coder reads the <strong>Innovation direction</strong> section of
+            that report. The innovation manifest records the direction and the
+            hypothesis.
+          </li>
+        </ul>
+
+        <h3>Evaluation and evolution</h3>
+        <ul>
+          <li>
+            A successful forward pass writes the self-evaluation to
+            <code>&lt;app-data&gt;/evals/pending/&lt;session&gt;/</code> and the
+            evolution plan to
+            <code>&lt;app-data&gt;/evolutions/pending/&lt;session&gt;/</code>.
+          </li>
+          <li>
+            The Evaluator writes <code>gradient.json</code> next to
+            <code>evals.json</code>, <code>evals.md</code>, and
+            <code>rubrics.json</code>. The plugin copies the gradient to
+            <code>plan.json</code> in the evolution directory.
+          </li>
+          <li>
+            A successful backward pass writes
+            <code>configs_rw/v(K+1)/</code> with five configuration files, five
+            prompts, and <code>EVOLUTION.md</code>. It then moves the plan and
+            the evaluation to their <code>applied/</code> directories.
+          </li>
+          <li>
+            The Evolver cannot change a stage time limit, a scale limit, an
+            evaluation target, an integrity rule, or an existing rubric entry.
+          </li>
+          <li>
+            The audit writes <code>scores.json</code> and
+            <code>scores.md</code> into the session evaluation directory. Output
+            parity is 100 percent by default, because a minimal run claims no
+            computational result.
+          </li>
+        </ul>
+
+        <h3>Compatibility and documentation</h3>
+        <ul>
+          <li>
+            The configuration schema version and the state schema version are
+            now 2. The plugin version is 0.5.0.
+          </li>
+          <li>
+            The settings page shows the seven renamed stage limits and the new
+            app-data fields. The copy now names a session instead of a run.
+          </li>
+          <li>
+            This changelog page is new. The subagent contract page describes the
+            forward pass, the backward pass, and the pending and applied
+            directories.
+          </li>
+          <li>
+            The TypeScript style guide now matches the Python style guide. The
+            maximum line length is 119 characters. A line break follows a
+            complete doc comment sentence. A hanging indent aligns
+            horizontally.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-4-0">0.4.0</h2>
+        <p class="release-date">7 November 2026</p>
+        <p>
+          This release adds binding instructions for AI agents that work in the
+          repository.
+        </p>
+        <ul>
+          <li>
+            <code>AGENTS.md</code> names the three mandatory style guides, the
+            natural language rules, the Python rules, the TypeScript rules, and
+            the repository conventions.
+          </li>
+          <li>
+            <code>CLAUDE.md</code> points to <code>AGENTS.md</code>, so a Claude
+            agent reads the same rules.
+          </li>
+          <li>
+            The README and the subagent contract page link the three style
+            guides and state that the PaperLoop Team does not recommend an
+            Anthropic model or Anthropic software for this repository.
+          </li>
+          <li>
+            The generated documentation includes the agent instructions and the
+            recommendation.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-3-0">0.3.0</h2>
+        <p class="release-date">7 November 2026</p>
+        <p>
+          This release improves the subagent prompts and adds token cost
+          accounting.
+        </p>
+        <ul>
+          <li>
+            The Evaluator reports token cost efficiency (TCE). TCE is the
+            number of completed agent-task pairs per one million billed tokens.
+          </li>
+          <li>
+            The plugin captures token usage from each child session. The usage
+            covers input, output, cache read, and cache write tokens.
+          </li>
+          <li>
+            A new temporary-file rule keeps scratch files in a dot directory.
+            The rule requires cleanup of every temporary file, temporary
+            directory, and <code>.venv</code> directory before a stage returns.
+          </li>
+          <li>
+            The stage prompts, subagent configuration files, app-data README,
+            contract page, and packaged seed carry the new rules.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-2-1">0.2.1</h2>
+        <p class="release-date">6 November 2026</p>
+        <ul>
+          <li>
+            The README was shortened from 398 lines to 77 lines. It now gives a
+            short introduction, the usage steps, the requirements, the team
+            list, and the copyright notice.
+          </li>
+          <li>
+            The two-line AGPL header was added to 24 TypeScript, JavaScript,
+            test, and script files.
+          </li>
+          <li>
+            The generated documentation was rebuilt from the shortened README.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-2-0">0.2.0</h2>
+        <p class="release-date">6 November 2026</p>
+        <p>
+          This is the first implementation of the PaperLoop plugin. It replaces
+          the template placeholder with the stage workflow.
+        </p>
+        <ul>
+          <li>
+            The plugin ran seven stages for one paper:
+            <code>runtime</code>, <code>reprod_code</code>,
+            <code>reprod_report</code>, <code>innov_code</code>,
+            <code>innov_report</code>, <code>self_eval</code>, and
+            <code>self_evolve</code>.
+          </li>
+          <li>
+            Five subagents ran the stages in isolated child sessions:
+            runtime, coder, researcher, evaluator, and evolver.
+          </li>
+          <li>
+            The tools were <code>paperloop_setup</code>,
+            <code>paperloop_run</code>, <code>paperloop_status</code>,
+            <code>paperloop_audit</code>, and <code>paperloop_config</code>.
+          </li>
+          <li>
+            <code>paperloop_setup</code> created the app-data tree and the
+            reproduction workspace. <code>paperloop_run</code> ran a stage or a
+            slice of stages.
+          </li>
+          <li>
+            The stage time limits were 600 seconds for the first five stages and
+            300 seconds for the last two stages. Each limit had a plugin setting.
+          </li>
+          <li>
+            The app data held read-only configuration
+            <code>configs_ro/v&lt;N&gt;/</code>, versioned write configuration
+            <code>configs_rw/v&lt;N&gt;/</code>, evaluations
+            <code>evals/v&lt;N&gt;/</code>, stage history, and run state.
+          </li>
+          <li>
+            The audit computed TCR, HIB, DCC, report compile rate, media
+            validity, and output parity. It wrote
+            <code>evals/v&lt;N&gt;/scores.json</code> and
+            <code>scores.md</code>.
+          </li>
+          <li>
+            The plugin included a settings page, a packaged default app data
+            seed, a TypeDoc site, the subagent contract page, and a smoke test.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-1-0">0.1.0</h2>
+        <p class="release-date">4 November 2026</p>
+        <ul>
+          <li>
+            This release is the DeepSeek Harness plugin template. It contains a
+            placeholder tool, the Cordis patch, the AGPL license, and the team
+            README.
+          </li>
+          <li>
+            The template does not contain the PaperLoop stages or the PaperLoop
+            tools.
+          </li>
+        </ul>
+      </article>
+    </main>
+  </body>
+</html>
