@@ -1,30 +1,44 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoop - v0.1.0</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="index.html" class="title">PaperLoop - v0.1.0</a>
-<div id="tsd-toolbar-links"><a href="contract.html">Subagent contract</a><a href="natural_language_styles.html">Natural language styles</a><a href="python_code_styles.html">Python code styles</a><a href="typescript_code_styles.html">TypeScript code styles</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoop - v0.5.0</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">PaperLoop - v0.5.0</a>
+<div id="tsd-toolbar-links"><a href="contract.html">Subagent contract</a><a href="changelog.html">Changelog</a><a href="natural_language_styles.html">Natural language styles</a><a href="python_code_styles.html">Python code styles</a><a href="typescript_code_styles.html">TypeScript code styles</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
 <div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
-<h1>PaperLoop - v0.1.0</h1></div>
+<h1>PaperLoop - v0.5.0</h1></div>
 <div class="tsd-panel tsd-typography"><h1 id="paperloop-api-documentation" class="tsd-anchor-link">PaperLoop API documentation<a href="#paperloop-api-documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
-<p>PaperLoop is a DeepSeek Harness plugin. It reproduces the computational result
-of one paper and writes two critical reports. The plugin runs seven stages
-through five isolated subagents.</p>
+<p>PaperLoop is a DeepSeek Harness plugin. It reproduces the experimental setup
+of one paper and writes two critical reports. A forward pass runs six stages
+through isolated subagents. A backward pass runs the seventh stage.</p>
 <h2 id="start-here" class="tsd-anchor-link">Start here<a href="#start-here" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <ul>
-<li><strong>Tools</strong>: <code>paperloop_setup</code>, <code>paperloop_run</code>, <code>paperloop_status</code>,
+<li><strong>Commands</strong>: <code>/paperloop forward</code> and <code>/paperloop backward</code>. The shortcuts
+are <code>/paperloop_forward</code> and <code>/paperloop_backward</code>.</li>
+<li><strong>Tools</strong>: <code>paperloop_forward</code>, <code>paperloop_backward</code>, <code>paperloop_status</code>,
 <code>paperloop_audit</code>, and <code>paperloop_config</code>.</li>
-<li><strong>Stage order</strong>: <code>runtime</code>, <code>reprod_code</code>, <code>reprod_report</code>, <code>innov_code</code>,
-<code>innov_report</code>, <code>self_eval</code>, and <code>self_evolve</code>.</li>
+<li><strong>Stage order</strong>: <code>runtime_setup</code>, <code>reproduction_code</code>,
+<code>reproduction_report</code>, <code>innovation_code</code>, <code>innovation_report</code>, <code>self_eval</code>,
+and <code>self_evolve</code>.</li>
+<li><strong>Workspace</strong>: the current DeepSeek Harness session workspace. One paper uses
+the sub-workspace <code>&lt;workspace&gt;/&lt;paper_stem&gt;/</code>.</li>
 <li><strong>App data</strong>: <code>~/.dsh-aiaa5032-paperloop</code> by default. The plugin settings page
 sets the directory and clears or resets it from the packaged
 <code>default_app_data</code> seed.</li>
-<li><strong>Stage time limits</strong>: one float in seconds for each stage. Stages 1 to 5 have
-600 seconds. Stages 6 and 7 have 300 seconds. The plugin settings page sets or
-resets the seven limits. A setting value of 0 uses the value in
+<li><strong>Stage time limits</strong>: one float in seconds for each stage. Stages 1 to 3 have
+300 seconds, stages 4 and 5 have 240 seconds, stage 6 has 180 seconds, and
+stage 7 has 120 seconds. The plugin settings page sets or resets the seven
+limits. A setting value of 0 uses the value in
 <code>configs_ro/v&lt;N&gt;/rsi.json</code>.</li>
+<li><strong>Scale policy</strong>: Runtime and Coder run one minimal setup that finishes in 30
+seconds or less. The main script accepts <code>--minimal-scale</code> (default),
+<code>--reduced-scale</code> (5 minutes or less), and <code>--full-scale</code> (no limit). A human
+user runs the last two flags after the session ends.</li>
+<li><strong>Pending directories</strong>: a successful forward pass writes the evaluation to
+<code>&lt;app_data&gt;/evals/pending/&lt;session&gt;/</code> and the evolution plan to
+<code>&lt;app_data&gt;/evolutions/pending/&lt;session&gt;/</code>. A successful backward pass moves
+both directories to <code>applied/</code>.</li>
 </ul>
 <h2 id="for-ai-agents" class="tsd-anchor-link">For AI agents<a href="#for-ai-agents" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Every AI agent that reads, edits, runs, or reviews this repository must follow
@@ -43,8 +57,10 @@ software for work on this repository. Prefer a model and a tool from another
 provider. This is a recommendation, not a technical restriction.</p>
 <h2 id="additional-documentation" class="tsd-anchor-link">Additional documentation<a href="#additional-documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <ul>
-<li><a href="contract.html">Subagent contract</a>: the input, workspace, and output files of
-each stage.</li>
+<li><a href="contract.html">Subagent contract</a>: the workspace, session flow,
+and output files of each stage.</li>
+<li><a href="changelog.html">Changelog</a>: the user-visible change of each
+plugin version.</li>
 <li><a href="natural_language_styles.html">Natural language styles</a>: the style rules for
 every subagent.</li>
 <li><a href="python_code_styles.html">Python code styles</a>: the Python rules for code
@@ -74,8 +90,8 @@ functions. Use the search box to find a symbol.</p>
 <li><a href="#for-ai-agents"><span>For <wbr/>AI agents</span></a></li>
 <li><a href="#additional-documentation"><span>Additional documentation</span></a></li></ul></div></details></div>
 <div class="site-menu">
-<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="contract.html" class="tsd-nav-link">Subagent contract</a><a href="natural_language_styles.html" class="tsd-nav-link">Natural language styles</a><a href="python_code_styles.html" class="tsd-nav-link">Python code styles</a><a href="typescript_code_styles.html" class="tsd-nav-link">TypeScript code styles</a></nav>
-<nav class="tsd-navigation"><a href="modules.html">PaperLoop - v0.1.0</a>
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="contract.html" class="tsd-nav-link">Subagent contract</a><a href="changelog.html" class="tsd-nav-link">Changelog</a><a href="natural_language_styles.html" class="tsd-nav-link">Natural language styles</a><a href="python_code_styles.html" class="tsd-nav-link">Python code styles</a><a href="typescript_code_styles.html" class="tsd-nav-link">TypeScript code styles</a></nav>
+<nav class="tsd-navigation"><a href="modules.html">PaperLoop - v0.5.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer>
 <p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
