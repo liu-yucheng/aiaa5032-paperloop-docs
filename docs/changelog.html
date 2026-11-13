@@ -26,14 +26,127 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.5.0 entry is the unreleased working version.
-        The plugin version is also in <code>src/constants.ts</code> and
+        follow the Git tags. The 0.6.1 entry is the current release. The plugin
+        version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
 
       <article class="release">
-        <h2 id="v0-5-0">0.5.0 (unreleased)</h2>
-        <p class="release-date">Working version, 12 November 2026</p>
+        <h2 id="v0-6-1">0.6.1</h2>
+        <p class="release-date">13 November 2026</p>
+        <p>
+          This hot fix removes the obsolete <code>scripts/evaluator-v1/</code>
+          replay prototype. The plugin does not use that directory. The
+          evaluator evidence checks remain in <code>src/evaluation.ts</code>.
+        </p>
+
+        <h3>Compatibility and documentation</h3>
+        <ul>
+          <li>
+            The plugin version is 0.6.1. The configuration schema version and
+            the state schema version stay at 2.
+          </li>
+          <li>
+            The plugin still has seven stages, five tools, and five subagents.
+          </li>
+          <li>
+            The source tree no longer contains the replay prototype. The 0.6.0
+            evaluation record rules are unchanged.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-6-0">0.6.0</h2>
+        <p class="release-date">13 November 2026</p>
+        <p>
+          This release makes the self-evaluation evidence-checked. A score needs
+          a recorded reason and an existing evidence file. The seven-stage
+          architecture is unchanged.
+        </p>
+
+        <h3>Evaluation record</h3>
+        <ul>
+          <li>
+            The Evaluator scores the five forward stages. It writes one pair for
+            each stage and does not score <code>self_eval</code> or
+            <code>self_evolve</code>.
+          </li>
+          <li>
+            A pair has <code>agent</code>, <code>stage</code>,
+            <code>rubricId</code>, <code>criterion</code>,
+            <code>verdict</code>, <code>score</code>, <code>reason</code>,
+            <code>uncertainty</code>, and <code>evidence</code>.
+          </li>
+          <li>
+            A supported verdict scores 5. A contradicted verdict scores 1. An
+            insufficient verdict has a null score and the uncertainty flag.
+          </li>
+          <li>
+            Each evidence reference names an existing file in the paper
+            workspace or the app data. A reference can add a line and a
+            pointer.
+          </li>
+          <li>
+            <code>evals.json</code> has schema version 1, the session ID, a
+            one-sentence scope, <code>pairs</code>, <code>weakStages</code>,
+            <code>unassessedStages</code>, and
+            <code>tokenCostEfficiency</code>.
+          </li>
+          <li>
+            <code>rubrics.json</code> is append-only. Every earlier entry stays
+            unchanged. A new entry needs a new identifier.
+          </li>
+          <li>
+            The plugin recomputes the token cost efficiency from the recorded
+            attempts. The status is <code>available</code>,
+            <code>partial</code>, <code>unavailable</code>, or
+            <code>zero_denominator</code>.
+          </li>
+          <li>
+            The plugin checks that <code>evals.md</code> names each stage and
+            rubric ID and shows each numeric score as <code>N/5</code>. A
+            mismatch fails the stage attempt.
+          </li>
+        </ul>
+
+        <h3>Audit and prompts</h3>
+        <ul>
+          <li>
+            Rubric agreement now counts the five forward pairs that have a
+            rubric record. The earlier metric used six pairs.
+          </li>
+          <li>
+            The Evaluator configuration and prompt state the record fields and
+            the fixed scores. The self-evaluation guidance names the applied
+            evaluation directory.
+          </li>
+        </ul>
+
+        <h3>Compatibility and documentation</h3>
+        <ul>
+          <li>
+            The plugin version is 0.6.0. The configuration schema version and
+            the state schema version stay at 2.
+          </li>
+          <li>
+            The plugin still has seven stages, five tools, and five subagents.
+          </li>
+          <li>
+            A 0.5.0 evaluation record can lack the new fields. The new check
+            rejects such a record. Finish an in-flight session with 0.5.0, or
+            rerun its self-evaluation with 0.6.0.
+          </li>
+          <li>
+            The subagent contract page and the API reference describe the
+            evaluation record.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-5-0">0.5.0</h2>
+        <p class="release-date">13 November 2026</p>
         <p>
           This release cuts a full forward pass to 30 minutes. It also replaces
           the setup/run interface with a forward pass and a backward pass.
