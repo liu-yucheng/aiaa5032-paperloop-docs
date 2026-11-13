@@ -387,7 +387,34 @@
       <h3>6. Self-evaluation and gradient</h3>
       <p>
         The Evaluator writes four files into the evaluation directory. The
-        <code>gradient.json</code> file is the proposal for stage 7:
+        <code>evals.json</code> file holds one pair for each of the five forward
+        stages. The file has schema version 1, the session ID, and a one-sentence
+        scope. A pair has the agent, the stage, the rubric ID, the criterion,
+        the verdict, the score, the reason, the uncertainty flag, and at least
+        one evidence reference. The plugin checks every reference against an
+        existing file in the paper workspace or the app data. A supported
+        verdict scores 5, a contradicted verdict scores 1, and an insufficient
+        verdict has a null score and the uncertainty flag. The stage 6 attempt
+        fails when a score, a reason, or an evidence reference does not match
+        the record.
+      </p>
+      <p>
+        The <code>rubrics.json</code> file holds the rubric entries. Each entry
+        has a fixed score map. The plugin keeps every entry from the newest
+        applied rubric. A new entry is appended only for a new task class. The
+        plugin rejects a changed or removed entry. The <code>evals.md</code>
+        file must name each stage, each rubric ID, and each numeric score as
+        <code>N/5</code>.
+      </p>
+      <p>
+        The <code>tokenCostEfficiency</code> field counts completed pairs per
+        one million billed tokens. A completed pair has a score of 3 or more.
+        The plugin recomputes the value from the history attempts and rejects a
+        mismatch. If an attempt has no token count, the status is
+        <code>partial</code> and the value is null.
+      </p>
+      <p>
+        The <code>gradient.json</code> file is the proposal for stage 7:
       </p>
       <pre><code>{
   "session_id": "_20261112T201500_attention",
@@ -479,9 +506,10 @@
         The deterministic audit computes task completion rate (TCR), human
         intervention burden (HIB), delegation completion cost (DCC) in minutes,
         output parity, report compile rate, media validity rate, and rubric
-        agreement. Output parity compares a minimal run only with itself. A
-        minimal run claims no computational result, so its parity target is 100
-        percent by definition.
+        agreement. Rubric agreement is the share of the five forward pairs that
+        has a rubric record. Output parity compares a minimal run only with
+        itself. A minimal run claims no computational result, so its parity
+        target is 100 percent by definition.
       </p>
 
       <h2>Integrity rules</h2>
