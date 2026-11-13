@@ -13,6 +13,7 @@
         <nav class="site-nav" aria-label="Documentation pages">
           <a href="index.html">API reference</a>
           <a href="contract.html">Subagent contract</a>
+          <a href="changelog.html">Changelog</a>
           <a href="natural_language_styles.html">Natural language</a>
           <a href="python_code_styles.html">Python</a>
           <a href="typescript_code_styles.html">TypeScript</a>
@@ -30,23 +31,26 @@
 <h1>TypeScript Code Styles</h1>
 <ul>
 <li>Use the <a href="https://google.github.io/styleguide/tsguide.html">Google TypeScript Style Guide</a>
-as the code style reference with the exceptions below.</li>
-<li>Use ASD-STE100 non-strict mode with academic US English fallback as the natural
-language style reference.</li>
-<li>Use a soft line length limit of <code>[79, 119]</code>.<ul>
-<li>Use hard line wrapping when a line is longer than 119 characters.</li>
-<li>Use soft line wrapping to improve readability when a line is 80 to 119 characters.</li>
-<li>Do not wrap a line at an arbitrary column when the wrap makes the code harder to read.</li>
+as code style reference with the following exceptions.<ul>
+<li>Enforce a line break at the end of each complete documentation comment sentence.</li>
+<li>Follow the custom line length rules.</li>
+<li>Follow the custom indentation rules.</li>
+</ul>
+</li>
+<li>Use ASD-STE-100 non-strict mode with academic US English fallback as natural language style reference.</li>
+<li>Use a maximum line length limit of 119 characters.<ul>
+<li>Use &quot;smart&quot; line breaks to improve sentence and code readability.</li>
+<li>Do not use &quot;dumb&quot; line breaks that affect sentence or code readability just to satisfy the rules.</li>
 </ul>
 </li>
 <li>Use 2-space indentation.<ul>
-<li>Align a hanging indent horizontally with the expression that it continues.</li>
-<li>Do not use vertical alignment that depends on the width of adjacent tokens.</li>
+<li>Use horizontally aligned hanging indents.</li>
+<li>Do not use vertically aligned indents.</li>
 </ul>
 </li>
-<li>Use complete and meaningful words for names.<ul>
-<li>Prefer <code>reproductionReportPath</code> to <code>rrp</code>.</li>
-<li>Do not use short mathematical names unless the domain definition is unambiguous.</li>
+<li>Use complete and meaningful words to name things instead of short and confusing mathematical notations.<ul>
+<li>Long and clear names are better than single character names that make no sense.</li>
+<li>Do not use overly abbreviated names.</li>
 </ul>
 </li>
 <li>Use <code>const</code> by default. Use <code>let</code> only when the binding changes. Do not use <code>var</code>.</li>
@@ -98,7 +102,7 @@ loop when one operation must finish before the next one starts.</li>
 </ul>
 </li>
 <li>Write a documentation comment for every exported function, class, and type.<ul>
-<li>Use a complete sentence.</li>
+<li>Enforce a line break at the end of each complete sentence.</li>
 <li>Explain the contract, the important side effects, and the failure mode.</li>
 <li>Do not repeat the function name as a sentence.</li>
 </ul>
