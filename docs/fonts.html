@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PaperLoop font regulation</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html"
+          ><img src="logo-lockup.svg" alt="PaperLoop documentation"
+        /></a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html">Subagent contract</a>
+          <a href="changelog.html">Changelog</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="python_code_styles.html">Python</a>
+          <a href="typescript_code_styles.html">TypeScript</a>
+          <a href="fonts.html" aria-current="page">Fonts</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <p class="eyebrow">PaperLoop regulation</p>
+      <h1>Font regulation</h1>
+      <p class="lede">
+        This page states the font regulation for every web page in this
+        repository. A human author and an AI agent follow the same regulation.
+        The regulation uses three free families and no commercial family.
+      </p>
+
+      <h2>The rule</h2>
+      <ol>
+        <li>
+          <strong>R1.</strong> Use <strong>Noto Sans</strong> for every
+          sans-serif face. The CSS stack is
+          <code>"Noto Sans", system-ui, sans-serif</code>.
+        </li>
+        <li>
+          <strong>R2.</strong> Use <strong>Noto Serif</strong> for every serif
+          face. The CSS stack is <code>"Noto Serif", serif</code>.
+        </li>
+        <li>
+          <strong>R3.</strong> Use <strong>Cascadia Mono</strong> for every
+          monospace face. The CSS stack is
+          <code>"Cascadia Mono", ui-monospace, monospace</code>.
+        </li>
+        <li>
+          <strong>R4.</strong> Do not name a commercial font in a stylesheet, an
+          SVG file, a script, or a document. A fallback entry counts as a name.
+        </li>
+        <li>
+          <strong>R5.</strong> Do not add a font file to this repository. The
+          three families are named, not bundled.
+        </li>
+        <li>
+          <strong>R6.</strong> Follow the generic family after the named family.
+          Use <code>sans-serif</code> for R1, <code>serif</code> for R2, and
+          <code>ui-monospace</code> then <code>monospace</code> for R3. Do not
+          add a second named family to a stack.
+        </li>
+      </ol>
+
+      <h2>The three families</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Face</th>
+            <th>Family</th>
+            <th>Licence</th>
+            <th>Published by</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sans-serif</td>
+            <td>Noto Sans</td>
+            <td>SIL Open Font License 1.1</td>
+            <td>Google</td>
+          </tr>
+          <tr>
+            <td>Serif</td>
+            <td>Noto Serif</td>
+            <td>SIL Open Font License 1.1</td>
+            <td>Google</td>
+          </tr>
+          <tr>
+            <td>Monospace</td>
+            <td>Cascadia Mono</td>
+            <td>SIL Open Font License 1.1</td>
+            <td>Microsoft</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        The SIL Open Font License permits use, study, modification, and
+        redistribution of the font. It permits a document that uses the font. It
+        does not permit the sale of the font by itself. This repository ships no
+        font file, so the licence applies to the reader installation only.
+      </p>
+
+      <h2>Where the rule applies</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>What it holds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>docs-src/docs.css</code></td>
+            <td>
+              The three custom properties <code>--paperloop-font-sans</code>,
+              <code>--paperloop-font-serif</code>, and
+              <code>--paperloop-font-mono</code>. Every hand-written page reads
+              these properties.
+            </td>
+          </tr>
+          <tr>
+            <td><code>docs-src/api-fonts.css</code></td>
+            <td>
+              The override for the TypeDoc theme. The theme stylesheet names
+              commercial families. This file loads after the theme and replaces
+              each stack. <code>typedoc.json</code> declares it in
+              <code>customCss</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>docs-src/*.svg</code></td>
+            <td>
+              The two figures and the logo assets. A figure sets
+              <code>font-family="'Noto Sans', system-ui, sans-serif"</code> on
+              each text element.
+            </td>
+          </tr>
+          <tr>
+            <td><code>client/index.js</code></td>
+            <td>
+              The style block of the plugin settings page. It sets the
+              monospace stack on a path field.
+            </td>
+          </tr>
+          <tr>
+            <td><code>docs/</code></td>
+            <td>
+              The generated documentation. Do not edit this tree by hand. Run
+              <code>bash generate-docs.bash</code> after a change to a source
+              file.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Exceptions</h2>
+      <ul>
+        <li>
+          <strong>The logo wordmark is an outline.</strong> The text
+          <code>PaperLoop</code> in <code>docs-src/logo-lockup.svg</code> is a
+          vector path made from Noto Sans Bold. The file contains no font
+          reference, so the logo renders the same on a machine without the font.
+          The mark itself is a path in every logo file.
+        </li>
+        <li>
+          <strong>The TypeDoc theme keeps its own stacks.</strong>
+          <code>docs/assets/style.css</code> is generated output. It names
+          several commercial families. <code>docs-src/api-fonts.css</code> loads
+          after it, so the rendered page uses the three free families. Do not
+          edit the generated stylesheet.
+        </li>
+        <li>
+          <strong>A missing family falls back to the generic family.</strong> A
+          reader who lacks Noto Sans gets the system sans-serif face of the
+          browser. The page stays readable, and the fallback names no commercial
+          font.
+        </li>
+      </ul>
+
+      <h2>How to check</h2>
+      <p>Run each command at the repository root.</p>
+
+      <p><strong>Check 1. The declared stacks.</strong></p>
+      <pre><code>grep -rhoE "font-family:[^;]*|font-family=\"[^\"]*\"" \
+  docs-src client scripts src README.md typedoc.json \
+  --exclude=fonts.html | sort -u</code></pre>
+      <p>The command prints these four lines and no other line.</p>
+      <pre><code>font-family: "Cascadia Mono", ui-monospace, monospace
+font-family: var(--paperloop-font-mono)
+font-family: var(--paperloop-font-sans)
+font-family="'Noto Sans', system-ui, sans-serif"</code></pre>
+
+      <p><strong>Check 2. The three custom properties.</strong></p>
+      <pre><code>grep -hoE -- "--paperloop-font-(sans|serif|mono): *[^;]*" docs-src/docs.css</code></pre>
+      <p>The command prints these three lines.</p>
+      <pre><code>--paperloop-font-sans: "Noto Sans", system-ui, sans-serif
+--paperloop-font-serif: "Noto Serif", serif
+--paperloop-font-mono: "Cascadia Mono", ui-monospace, monospace</code></pre>
+
+      <p><strong>Check 3. No commercial family name.</strong></p>
+      <pre><code>grep -rniE "(segoe|sfmono|consolas|menlo|roboto|helvetica|arial|georgia|ubuntu|\bInter\b)" \
+  docs-src client scripts src README.md typedoc.json \
+  | grep -v "docs-src/fonts.html"</code></pre>
+      <p>
+        The command prints no line. This page holds the pattern itself, so the
+        second filter drops this page from the result.
+      </p>
+
+      <p><strong>Check 4. The logo files hold no font reference.</strong></p>
+      <pre><code>grep -c font icon.svg docs-src/logo.svg docs-src/favicon.svg docs-src/logo-lockup.svg</code></pre>
+      <p>Each line ends with <code>:0</code>.</p>
+
+      <p>
+        A reader who adds a web page, a figure, or an icon applies R1 to R6 in
+        the same change.
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>Agent policy.</strong> An AI agent that writes web content in
+          this repository applies this regulation. A violation is a defect of
+          the change, not a style preference.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

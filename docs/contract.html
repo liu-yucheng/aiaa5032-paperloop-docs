@@ -4,12 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PaperLoop subagent contract</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="docs.css" />
   </head>
   <body>
     <header class="site-header">
       <div class="site-header__inner">
-        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <a class="site-title" href="index.html"
+          ><img src="logo-lockup.svg" alt="PaperLoop documentation"
+        /></a>
         <nav class="site-nav" aria-label="Documentation pages">
           <a href="index.html">API reference</a>
           <a href="contract.html" aria-current="page">Subagent contract</a>
@@ -17,6 +20,7 @@
           <a href="natural_language_styles.html">Natural language</a>
           <a href="python_code_styles.html">Python</a>
           <a href="typescript_code_styles.html">TypeScript</a>
+          <a href="fonts.html">Fonts</a>
         </nav>
       </div>
     </header>
@@ -36,7 +40,8 @@
           repository follows
           <a href="natural_language_styles.html">natural_language_styles</a>,
           <a href="python_code_styles.html">python_code_styles</a>, and
-          <a href="typescript_code_styles.html">typescript_code_styles</a>. The
+          <a href="typescript_code_styles.html">typescript_code_styles</a>. Each
+          web page follows the <a href="fonts.html">font regulation</a>. The
           repository root holds <code>AGENTS.md</code> with the binding
           instructions. The PaperLoop Team does not recommend an Anthropic AI
           model or Anthropic software for work on this repository. This is a
@@ -101,8 +106,8 @@
             <td><code>&lt;session&gt;</code></td>
             <td>
               One session identifier:
-              <code>_&lt;YYYYMMDDTHHMMSS&gt;_&lt;short_topic&gt;</code>. The
-              plugin creates it for one paper.
+              <code>&lt;YYYYMMDDTHHMMSS&gt;_&lt;short_topic&gt;</code>. The
+              plugin creates it for one paper in one split.
             </td>
           </tr>
           <tr>
@@ -152,17 +157,117 @@
 
 &lt;app-data&gt;/
   configs_ro/vN/{rsi.json,paperloop.json}
-  configs_rw/vK/&lt;subagent&gt;/{config.json,prompt.md}
+  configs_rw/vK/{CHECKPOINT.json,&lt;subagent&gt;/{config.json,prompt.md}}
   sessions/&lt;session&gt;/{input.json,session.json,state.json}
   history/&lt;session&gt;/
-  evals/pending/&lt;session&gt;/{evals.json,evals.md,rubrics.json,gradient.json,scores.json,scores.md}
+  evals/pending/&lt;session&gt;/{evals.json,evals.md,rubrics.json,gradient.json,loss.json,feedback.json,scores.json,scores.md}
   evals/applied/&lt;session&gt;/
+  evals/validated/&lt;session&gt;/{loss.json,evals.json,rubrics.json}
+  evals/validated/decisions.json
+  evals/tested/&lt;session&gt;/{loss.json,evals.json,rubrics.json}
+  evals/tested/reports.json
   evolutions/pending/&lt;session&gt;/{plan.json,session.json}
   evolutions/applied/&lt;session&gt;/</code></pre>
 
-      <h2>Forward pass</h2>
+      <h2>Training loop</h2>
       <p>
-        The command <code>/paperloop forward</code> asks for one or more paper
+        The plugin runs a training loop. The loop has the same parts as the
+        training loop of a neural network:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Neural-network part</th>
+            <th>PaperLoop part</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Parameters</td>
+            <td>
+              <code>configs_rw/v&lt;K&gt;/</code>. One version is one point in
+              the parameter space.
+            </td>
+          </tr>
+          <tr>
+            <td>Data item</td>
+            <td>One paper PDF file. The split names the purpose of the pass.</td>
+          </tr>
+          <tr>
+            <td>Forward pass</td>
+            <td>
+              Stages 1 to 6. The pass writes one <code>loss.json</code> for the
+              paper.
+            </td>
+          </tr>
+          <tr>
+            <td>Loss function</td>
+            <td>
+              The evaluator. The plugin reduces the five stage scores to one
+              scalar loss.
+            </td>
+          </tr>
+          <tr>
+            <td>Gradient</td>
+            <td>
+              The evolution plan in <code>evolutions/pending/</code>. The
+              backward pass applies it.
+            </td>
+          </tr>
+          <tr>
+            <td>Optimizer step</td>
+            <td>
+              Stage 7. It writes <code>configs_rw/v&lt;K+1&gt;/</code> and one
+              <code>CHECKPOINT.json</code>.
+            </td>
+          </tr>
+          <tr>
+            <td>Checkpoint</td>
+            <td>
+              <code>configs_rw/v&lt;K&gt;/CHECKPOINT.json</code>. It records the
+              parent version and both losses of that version.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The loss of one paper is <code>mean(1 - score / 5)</code> over the five
+        forward stages. A stage without a score counts as 1.0. The loss stays
+        between 0 and 1. A lower loss is better. The plugin writes the loss. A
+        subagent must not write <code>loss.json</code>.
+      </p>
+
+      <h2>The loop and the roles</h2>
+      <figure class="figure">
+        <img
+          src="self-improvement-loop.svg"
+          alt="Eight boxes in a loop. Papers enter the training forward pass, which writes a loss and a gradient. The backward pass turns the gradient into the next parameters version. The validation pass keeps or rolls back that version. The test pass reports the direction of the loss. A dashed feedback box edits one pending loss and gradient."
+          width="980"
+          height="700"
+        />
+        <figcaption>
+          Figure 1. One epoch. Each pass writes to its own split directory. Only
+          the backward pass writes a parameters version. Human feedback enters
+          the loss and the gradient of one pending session.
+        </figcaption>
+      </figure>
+      <figure class="figure">
+        <img
+          src="subagent-stage-map.svg"
+          alt="Seven stage cards. Stage 1 runtime setup runs the runtime subagent. Stage 2 reproduction refactoring and stage 4 innovation experiment run the coder. Stage 3 reproduction analysis and stage 5 innovation analysis run the researcher. Stage 6 self-evaluation runs the evaluator. Stage 7 evolution planning runs the evolver."
+          width="980"
+          height="470"
+        />
+        <figcaption>
+          Figure 2. The subagent of each stage and the artifact that the stage
+          must write. Stage 7 writes the next parameters version, and the next
+          epoch starts again at stage 1.
+        </figcaption>
+      </figure>
+
+      <h2>Training forward pass</h2>
+      <p>
+        The command <code>/paperloop_forward</code> asks for one or more paper
         PDF files. The plugin validates each file, then repeats these steps for
         each paper:
       </p>
@@ -417,7 +522,7 @@
         The <code>gradient.json</code> file is the proposal for stage 7:
       </p>
       <pre><code>{
-  "session_id": "_20261112T201500_attention",
+  "session_id": "20261112T201500_attention",
   "topic": "attention",
   "evidence_summary": "Two stages retried once.",
   "weakness": "The reproduction report does not name a testable claim.",
@@ -430,8 +535,19 @@
     }
   ],
   "risks": ["The report becomes longer."],
+  "feedback": [
+    {
+      "feedback_id": "fb001",
+      "change": "Name the baseline table in the reproduction report."
+    }
+  ],
   "decision": "apply"
 }</code></pre>
+      <p>
+        The <code>feedback</code> array holds one entry for each human feedback
+        record that the session received. The section "Feedback pass" below
+        describes the record.
+      </p>
 
       <h3>7. Self-evolution</h3>
       <p>
@@ -444,13 +560,96 @@
         <code>evals/applied/</code>.
       </p>
 
-      <h2>Backward pass</h2>
+      <h2>Training backward pass</h2>
       <p>
-        The command <code>/paperloop backward</code> lists every session with a
+        The command <code>/paperloop_backward</code> lists every session with a
         pending plan. The user selects one or more sessions, or selects none to
         exit without a change. The plugin runs stage 7 for each selected
-        session. A backward pass is the only action that updates
-        <code>configs_rw/</code>.
+        session. A backward pass is the only action that writes a new parameters
+        version from a gradient. It writes
+        <code>configs_rw/v&lt;K+1&gt;/CHECKPOINT.json</code> with the parent
+        version and the training loss.
+      </p>
+
+      <h2>Validation pass</h2>
+      <p>
+        The command <code>/paperloop_validate</code> runs stages 1 to 6 for each
+        paper and writes no gradient. The plugin writes the loss of each paper to
+        <code>evals/validated/&lt;session&gt;/loss.json</code>. It then compares
+        the mean loss of the pass with the best validation loss in the
+        checkpoint history:
+      </p>
+      <ul>
+        <li>
+          A pass without an earlier validation loss sets the first loss. The
+          decision is <code>baseline</code>.
+        </li>
+        <li>
+          A loss that is not worse than the best loss by more than the tolerance
+          keeps the parameters. The decision is <code>keep</code>.
+        </li>
+        <li>
+          A loss that is worse than the best loss by more than the tolerance
+          copies the best version to a new version number. The decision is
+          <code>rollback</code>. The plugin never deletes a version.
+        </li>
+      </ul>
+      <p>
+        The plugin appends one record to
+        <code>evals/validated/decisions.json</code>. The record names the
+        version, the run loss, the best version, the best loss, and the decision.
+      </p>
+
+      <h2>Test pass</h2>
+      <p>
+        The command <code>/paperloop_test</code> runs stages 1 to 6 for each
+        paper and writes no gradient and no parameter. The plugin writes the loss
+        of each paper to
+        <code>evals/tested/&lt;session&gt;/loss.json</code>. It then compares the
+        mean test loss with the test loss of the last pass at the same or an
+        earlier version. The verdict is <code>improved</code>,
+        <code>unchanged</code>, <code>regressed</code>, or
+        <code>baseline</code>. The plugin appends one record to
+        <code>evals/tested/reports.json</code>.
+      </p>
+
+      <h2>Feedback pass</h2>
+      <p>
+        The command <code>/paperloop_feedback</code> injects human feedback into
+        one or more pending sessions:
+      </p>
+      <pre><code>/paperloop_feedback --session=&lt;session_id&gt; --feedback=&lt;text&gt;   [--session=&lt;session_id&gt; --feedback=&lt;text&gt; ...]</code></pre>
+      <p>
+        The pass repeats these steps for each pair of options:
+      </p>
+      <ol>
+        <li>
+          The plugin appends one record to
+          <code>evals/pending/&lt;session&gt;/feedback.json</code>. The record
+          has an identifier <code>fb001</code>, <code>fb002</code>, and so on,
+          the session ID, the text, and the time.
+        </li>
+        <li>
+          The plugin runs stage 6 again with the feedback text in the prompt.
+          The Evaluator reads every record.
+        </li>
+        <li>
+          The Evaluator lowers a score only when the evidence supports the
+          feedback. It never raises a score because the user asked. It writes
+          one entry in the <code>feedback</code> array of
+          <code>gradient.json</code> for each record. The stage fails when one
+          identifier is absent.
+        </li>
+        <li>
+          The plugin recomputes <code>loss.json</code> and rewrites the plan in
+          <code>evolutions/pending/&lt;session&gt;/plan.json</code>.
+        </li>
+      </ol>
+      <p>
+        The pass changes no parameters version and no applied record. The next
+        backward pass applies the changed gradient. A session without a pending
+        evaluation record is an error, and the plugin names the training pass
+        that the user must run first.
       </p>
 
       <h2>Tools and commands</h2>
@@ -464,31 +663,71 @@
         <tbody>
           <tr>
             <td><code>/paperloop forward</code></td>
-            <td>Run stages 1 to 6 for one or more paper PDF files.</td>
+            <td>Run the training split for one or more paper PDF files.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop validate</code></td>
+            <td>Run the validation split and keep or roll back the parameters.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop test</code></td>
+            <td>Run the test split and report the direction of the loss.</td>
           </tr>
           <tr>
             <td><code>/paperloop backward</code></td>
-            <td>List pending plans and run stage 7 for the selected sessions.</td>
+            <td>
+              List pending gradients and run stage 7 for the selected sessions.
+            </td>
           </tr>
           <tr>
             <td><code>/paperloop_forward</code></td>
-            <td>The shortcut of the forward action.</td>
+            <td>The shortcut of the training split.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop_validate</code></td>
+            <td>The shortcut of the validation split.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop_test</code></td>
+            <td>The shortcut of the test split.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop_feedback</code></td>
+            <td>The shortcut of the feedback pass.</td>
           </tr>
           <tr>
             <td><code>/paperloop_backward</code></td>
-            <td>The shortcut of the backward action.</td>
+            <td>The shortcut of the backward pass.</td>
           </tr>
           <tr>
             <td><code>paperloop_forward</code></td>
-            <td>The tool form of the forward action.</td>
+            <td>The tool form of the training split.</td>
+          </tr>
+          <tr>
+            <td><code>paperloop_validate</code></td>
+            <td>The tool form of the validation split.</td>
+          </tr>
+          <tr>
+            <td><code>paperloop_test</code></td>
+            <td>The tool form of the test split.</td>
+          </tr>
+          <tr>
+            <td><code>paperloop_feedback</code></td>
+            <td>
+              The tool form of the feedback pass. Each item names one session
+              and one feedback text.
+            </td>
           </tr>
           <tr>
             <td><code>paperloop_backward</code></td>
-            <td>The tool form of the backward action.</td>
+            <td>The tool form of the backward pass.</td>
           </tr>
           <tr>
             <td><code>paperloop_status</code></td>
-            <td>Show the pending plans and the latest session.</td>
+            <td>
+              Show the parameters version, the best validation loss, the latest
+              loss of each split, the pending gradients, and the latest session.
+            </td>
           </tr>
           <tr>
             <td><code>paperloop_audit</code></td>
