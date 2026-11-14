@@ -4,12 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PaperLoop changelog</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="docs.css" />
   </head>
   <body>
     <header class="site-header">
       <div class="site-header__inner">
-        <a class="site-title" href="index.html">PaperLoop documentation</a>
+        <a class="site-title" href="index.html"
+          ><img src="logo-lockup.svg" alt="PaperLoop documentation"
+        /></a>
         <nav class="site-nav" aria-label="Documentation pages">
           <a href="index.html">API reference</a>
           <a href="contract.html">Subagent contract</a>
@@ -17,6 +20,7 @@
           <a href="natural_language_styles.html">Natural language</a>
           <a href="python_code_styles.html">Python</a>
           <a href="typescript_code_styles.html">TypeScript</a>
+          <a href="fonts.html">Fonts</a>
         </nav>
       </div>
     </header>
@@ -26,10 +30,166 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.6.1 entry is the current release. The plugin
+        follow the Git tags. The 0.7.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-7-0">0.7.0</h2>
+        <p class="release-date">14 November 2026</p>
+        <p>
+          This release turns the plugin into a training loop. The user trains,
+          validates, and tests the PaperLoop agentic system as one trains a
+          neural network. The release also adds the feedback pass, which lets a
+          human correction enter the loss and the gradient before the backward
+          pass, and two diagrams that show the loop and the stage roles. The seven
+          stages, the five subagents, and the read-only policy are unchanged.
+        </p>
+
+        <h3>The training-loop mapping</h3>
+        <ul>
+          <li>
+            The parameters are the files in <code>configs_rw/v&lt;N&gt;/</code>. One
+            version is one point in the parameter space.
+          </li>
+          <li>
+            The data items are the paper PDF files. A split selects the purpose
+            of a pass: training, validation, or test.
+          </li>
+          <li>
+            The loss function is the evaluator. The plugin reduces the five stage
+            scores to one scalar loss:
+            <code>loss = mean(1 - score / 5)</code>. An unscored stage counts as
+            1.0.
+          </li>
+          <li>
+            The gradient is the evolution plan. The backward pass applies it and
+            writes the next parameters version.
+          </li>
+          <li>
+            A checkpoint is <code>configs_rw/v&lt;N&gt;/CHECKPOINT.json</code>. It
+            records the parent version and the training loss and the validation
+            loss of that version.
+          </li>
+        </ul>
+
+        <h3>New commands and tools</h3>
+        <ul>
+          <li>
+            <code>/paperloop_validate</code> and the tool
+            <code>paperloop_validate</code> run the validation split. The pass
+            writes a loss to <code>evals/validated/</code> and one decision to
+            <code>evals/validated/decisions.json</code>. A loss that is worse
+            than the best validation loss by more than the tolerance copies the
+            best version to a new version number.
+          </li>
+          <li>
+            <code>/paperloop_test</code> and the tool <code>paperloop_test</code>
+            run the test split. The pass writes a loss to
+            <code>evals/tested/</code> and one report to
+            <code>evals/tested/reports.json</code>. It changes no parameter.
+          </li>
+          <li>
+            Each pass writes one <code>loss.json</code> in its evaluation
+            directory. A subagent does not write that file.
+          </li>
+          <li>
+            <code>/paperloop_status</code> reports the parameters version, the
+            best validation loss, and the latest loss of each split.
+          </li>
+          <li>
+            <code>/paperloop_feedback</code> and the tool
+            <code>paperloop_feedback</code> accept pairs of
+            <code>--session=&lt;id&gt;</code> and
+            <code>--feedback=&lt;text&gt;</code>. Each pair names one pending
+            session.
+          </li>
+          <li>
+            The plugin now has eight tools and six commands. The stage catalog
+            still has seven stages.
+          </li>
+        </ul>
+
+        <h3>Human feedback</h3>
+        <ul>
+          <li>
+            The plugin appends one record to
+            <code>evals/pending/&lt;session&gt;/feedback.json</code>. The
+            identifier is <code>fb001</code>, <code>fb002</code>, and so on.
+          </li>
+          <li>
+            The plugin runs stage 6 again with the feedback text in the prompt.
+            The Evaluator lowers a score only when the evidence supports the
+            feedback. It writes one entry in the <code>feedback</code> array of
+            <code>gradient.json</code> for each record.
+          </li>
+          <li>
+            The stage fails when one feedback identifier has no entry in the
+            gradient. A lost signal is not a valid pass.
+          </li>
+          <li>
+            The plugin recomputes <code>loss.json</code> and rewrites
+            <code>evolutions/pending/&lt;session&gt;/plan.json</code>. The pass
+            writes no parameters version and moves no applied record.
+          </li>
+        </ul>
+
+        <h3>Documentation</h3>
+        <ul>
+          <li>
+            The contract page has two figures. Figure 1 shows one epoch of the
+            loop. Figure 2 shows the subagent of each stage.
+          </li>
+          <li>
+            The contract page describes the feedback pass and the
+            <code>feedback</code> array of <code>gradient.json</code>.
+          </li>
+          <li>
+            The plugin icon and the documentation site share one mark. The mark
+            is a page, and the loop arrow is inside the page.
+          </li>
+          <li>
+            The web pages use free fonts only. Noto Sans is the sans-serif font,
+            Noto Serif is the serif font, and Cascadia Mono is the monospace
+            font. All three fonts carry the SIL Open Font License. No commercial
+            font is named in the stylesheet, the figures, or the icon. The
+            wordmark of the logo is a vector outline made from Noto Sans Bold,
+            so the logo renders the same without an installed font.
+          </li>
+        </ul>
+
+        <h3>Behaviour changes</h3>
+        <ul>
+          <li>
+            A session identifier no longer starts with an underscore. The form is
+            <code>&lt;YYYYMMDDTHHMMSS&gt;_&lt;short_topic&gt;</code>.
+          </li>
+          <li>
+            One <code>/paperloop_forward</code> accepts several paper files. Each
+            paper writes its own session under <code>evals/pending/</code> and
+            <code>evolutions/pending/</code>. One
+            <code>/paperloop_backward</code> accepts several session identifiers.
+          </li>
+          <li>
+            A feedback request without a pending evaluation record is an error.
+            The message names the training pass that the user must run first.
+          </li>
+          <li>
+            A feedback request without a session option or without a feedback
+            option is an error. The plugin changes nothing.
+          </li>
+          <li>
+            A validation pass and a test pass create no evolution directory. Only
+            a training pass writes a gradient.
+          </li>
+          <li>
+            The packaged seed contains
+            <code>configs_rw/v0/CHECKPOINT.json</code>. Run
+            <code>npm run seed</code> to regenerate the seed.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-6-1">0.6.1</h2>
