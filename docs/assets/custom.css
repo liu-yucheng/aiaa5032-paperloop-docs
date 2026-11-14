@@ -1,0 +1,30 @@
+/* Copyright (C) 2026 The PaperLoop Team. Released under the GNU AGPL 3.0 License. */
+/* GNU AGPL 3.0 License: https://www.gnu.org/licenses/agpl-3.0.txt. */
+
+/*
+ * The API reference uses free fonts only.
+ * The default theme names several commercial fonts.
+ * This file loads after the theme and replaces each stack.
+ */
+
+:root {
+  --paperloop-font-sans: "Noto Sans", system-ui, sans-serif;
+  --paperloop-font-mono: "Cascadia Mono", ui-monospace, monospace;
+}
+
+body,
+input,
+button,
+select,
+textarea {
+  font-family: var(--paperloop-font-sans);
+}
+
+code,
+pre,
+kbd,
+samp,
+.tsd-signature,
+.tsd-parameters .tsd-signature {
+  font-family: var(--paperloop-font-mono);
+}
