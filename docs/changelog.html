@@ -29,10 +29,63 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.9.0 entry is the current release. The plugin
+        follow the Git tags. The 0.9.1 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-9-1">0.9.1</h2>
+        <p class="release-date">15 November 2026</p>
+        <p>
+          This release makes the workspace of one paper unique for every pass.
+          A repeated pass on the same paper now writes a separate
+          sub-workspace and a separate session. The seven stages, the five
+          subagents, the eight tools, the stage time limits, and the read-only
+          policy are unchanged.
+        </p>
+
+        <h3>Paper workspace and session identifier</h3>
+        <ul>
+          <li>
+            Each paper pass uses the sub-workspace
+            <code>&lt;workspace&gt;/&lt;timestamp&gt;_&lt;paper_stem&gt;_&lt;rerun_count&gt;/</code>.
+          </li>
+          <li>
+            The same string is the session identifier in
+            <code>sessions/</code>, <code>evals/&lt;split&gt;/</code>, and
+            <code>evolutions/pending/</code>. One string names one pass.
+          </li>
+          <li>
+            The rerun count starts at <code>0</code> and counts the earlier
+            passes on the same paper in the same workspace. A repeated pass
+            never reuses the workspace or the session of an earlier pass.
+          </li>
+          <li>
+            The paper stem keeps its letters. Only a character that a directory
+            name rejects becomes a hyphen. The former <code>-2</code> and
+            <code>-3</code> suffix is gone.
+          </li>
+        </ul>
+
+        <h3>Session selectors</h3>
+        <ul>
+          <li>
+            <code>/paperloop_backward</code> and
+            <code>/paperloop_feedback</code> accept a 1-based session index or a
+            session identifier. The index is the position of the session in
+            creation order.
+          </li>
+          <li>
+            The pending list prints the index in front of the identifier, so a
+            user can copy the index into the next command.
+          </li>
+          <li>
+            A selector that names no plan or more than one plan prints one
+            message and changes nothing.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-9-0">0.9.0</h2>
