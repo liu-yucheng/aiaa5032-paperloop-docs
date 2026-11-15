@@ -1,14 +1,14 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoop - v0.7.0</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><link rel="stylesheet" href="assets/custom.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script>    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoop - v0.8.0</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><link rel="stylesheet" href="assets/custom.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script>    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   </head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="index.html" class="title">PaperLoop - v0.7.0</a>
-<div id="tsd-toolbar-links"><a href="contract.html">Subagent contract</a><a href="changelog.html">Changelog</a><a href="natural_language_styles.html">Natural language styles</a><a href="python_code_styles.html">Python code styles</a><a href="typescript_code_styles.html">TypeScript code styles</a><a href="fonts.html">Font regulation</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">PaperLoop - v0.8.0</a>
+<div id="tsd-toolbar-links"><a href="contract.html">Subagent contract</a><a href="changelog.html">Changelog</a><a href="natural_language_styles.html">Natural language styles</a><a href="code_styles.html">Code styles</a><a href="fonts.html">Font regulation</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
 <div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
-<h1>PaperLoop - v0.7.0</h1></div>
+<h1>PaperLoop - v0.8.0</h1></div>
 <div class="tsd-panel tsd-typography"><h1 id="paperloop-api-documentation" class="tsd-anchor-link">PaperLoop API documentation<a href="#paperloop-api-documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <p>PaperLoop is a DeepSeek Harness plugin. It reproduces the experimental setup
 of one paper and writes two critical reports. A forward pass runs six stages
@@ -16,9 +16,12 @@ through isolated subagents. A backward pass runs the seventh stage.</p>
 <h2 id="start-here" class="tsd-anchor-link">Start here<a href="#start-here" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <ul>
 <li><strong>Commands</strong>: <code>/paperloop forward</code>, <code>/paperloop validate</code>, <code>/paperloop test</code>,
-and <code>/paperloop backward</code>, plus <code>/paperloop feedback</code>. The shortcuts are
-<code>/paperloop_forward</code>, <code>/paperloop_validate</code>, <code>/paperloop_test</code>,
-<code>/paperloop_backward</code>, and <code>/paperloop_feedback</code>.</li>
+<code>/paperloop backward</code>, <code>/paperloop feedback</code>, <code>/paperloop help</code>, and
+<code>/paperloop clear</code>. The shortcuts are <code>/paperloop_forward</code>,
+<code>/paperloop_validate</code>, <code>/paperloop_test</code>, <code>/paperloop_backward</code>,
+<code>/paperloop_feedback</code>, <code>/paperloop_help</code>, and <code>/paperloop_clear_appdata</code>.
+<code>/paperloop_help</code> prints the manual with the live state, and
+<code>/paperloop_clear_appdata --yes</code> restores the packaged seed.</li>
 <li><strong>Tools</strong>: <code>paperloop_forward</code>, <code>paperloop_validate</code>, <code>paperloop_test</code>,
 <code>paperloop_backward</code>, <code>paperloop_feedback</code>, <code>paperloop_status</code>,
 <code>paperloop_audit</code>, and <code>paperloop_config</code>.</li>
@@ -51,13 +54,12 @@ training directories to <code>applied/</code>.</li>
 </ul>
 <h2 id="for-ai-agents" class="tsd-anchor-link">For AI agents<a href="#for-ai-agents" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Every AI agent that reads, edits, runs, or reviews this repository must follow
-three style guides:</p>
+two style guides:</p>
 <ul>
 <li><a href="natural_language_styles.html">natural_language_styles</a> for
 documentation, prompts, commit messages, and code comments.</li>
-<li><a href="python_code_styles.html">python_code_styles</a> for Python code.</li>
-<li><a href="typescript_code_styles.html">typescript_code_styles</a> for
-TypeScript code, tests, and scripts.</li>
+<li><a href="code_styles.html">code_styles</a> for Python, C, C++, R, MATLAB,
+Fortran, TypeScript, JavaScript, and SQL.</li>
 </ul>
 <p>The repository root holds <code>AGENTS.md</code> with the binding instructions.
 <code>CLAUDE.md</code> points to the same file.</p>
@@ -72,10 +74,8 @@ and output files of each stage.</li>
 plugin version.</li>
 <li><a href="natural_language_styles.html">Natural language styles</a>: the style rules for
 every subagent.</li>
-<li><a href="python_code_styles.html">Python code styles</a>: the Python rules for code
-stages.</li>
-<li><a href="typescript_code_styles.html">TypeScript code styles</a>: the TypeScript rules
-for this plugin.</li>
+<li><a href="code_styles.html">Code styles</a>: the general rules and the rules of each
+language.</li>
 </ul>
 <p>The API pages in the sidebar describe the exported modules, classes, and
 functions. Use the search box to find a symbol.</p>
@@ -99,8 +99,8 @@ functions. Use the search box to find a symbol.</p>
 <li><a href="#for-ai-agents"><span>For <wbr/>AI agents</span></a></li>
 <li><a href="#additional-documentation"><span>Additional documentation</span></a></li></ul></div></details></div>
 <div class="site-menu">
-<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="contract.html" class="tsd-nav-link">Subagent contract</a><a href="changelog.html" class="tsd-nav-link">Changelog</a><a href="natural_language_styles.html" class="tsd-nav-link">Natural language styles</a><a href="python_code_styles.html" class="tsd-nav-link">Python code styles</a><a href="typescript_code_styles.html" class="tsd-nav-link">TypeScript code styles</a><a href="fonts.html" class="tsd-nav-link">Font regulation</a></nav>
-<nav class="tsd-navigation"><a href="modules.html">PaperLoop - v0.7.0</a>
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="contract.html" class="tsd-nav-link">Subagent contract</a><a href="changelog.html" class="tsd-nav-link">Changelog</a><a href="natural_language_styles.html" class="tsd-nav-link">Natural language styles</a><a href="code_styles.html" class="tsd-nav-link">Code styles</a><a href="fonts.html" class="tsd-nav-link">Font regulation</a></nav>
+<nav class="tsd-navigation"><a href="modules.html">PaperLoop - v0.8.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer>
 <p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
