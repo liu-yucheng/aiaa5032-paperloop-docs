@@ -142,12 +142,16 @@
       code/source/
     reproduction/
       code/source/
+      code/source/&lt;package_name&gt;/
+      code/docs/index.html
       code/output/
       report/report.typ
       report/report.pdf
       report/media/
     innovation/
       code/source/
+      code/source/&lt;package_name&gt;/
+      code/docs/index.html
       code/output/
       report/report.typ
       report/report.pdf
@@ -323,7 +327,9 @@
             <td><code>reproduction_code</code></td>
             <td>Coder</td>
             <td>
-              <code>reproduction/code/source/main.py</code>,
+              <code>reproduction/code/source/</code> with the library
+              <code>source/&lt;package_name&gt;/</code>,
+              <code>reproduction/code/docs/index.html</code>,
               <code>run_manifest.json</code>,
               <code>reproduction/code/output/</code>
             </td>
@@ -344,7 +350,9 @@
             <td><code>innovation_code</code></td>
             <td>Coder</td>
             <td>
-              <code>innovation/code/source/main.py</code>,
+              <code>innovation/code/source/</code> with the library
+              <code>source/&lt;package_name&gt;/</code>,
+              <code>innovation/code/docs/index.html</code>,
               <code>run_manifest.json</code>,
               <code>innovation/code/output/</code>
             </td>
@@ -419,9 +427,60 @@
         </tbody>
       </table>
       <p>
-        The main script accepts exactly one scale flag:
-        <code>python main.py [--minimal-scale | --reduced-scale | --full-scale]</code>.
+        The main entry script accepts exactly one scale flag:
+        <code>&lt;main_script&gt; [--minimal-scale | --reduced-scale | --full-scale]</code>.
         The script writes the selected scale and the measured seconds to
+        <code>run_manifest.json</code>. The entry script uses the language of the
+        refactored code. When that language cannot read a command-line flag,
+        <code>main.py</code> is a thin launcher that passes the scale to the
+        language entry point.
+      </p>
+
+      <h2>Coder scope</h2>
+      <p>
+        The Coder writes code in Python, C, C++, R, MATLAB, Fortran, TypeScript,
+        JavaScript, or SQL. These nine languages cover more than 93 percent of
+        the academic papers that publish a code repository. The Coder keeps the
+        language of the original repository and changes it only when the original
+        code cannot run in this environment.
+      </p>
+      <p>
+        The Coder refactors each reusable part into a library at
+        <code>code/source/&lt;package_name&gt;/</code>. One module has one
+        responsibility and one public function or class for one task. The module
+        index file exports the public names: <code>__init__.py</code> for Python,
+        <code>index.ts</code> for TypeScript, <code>index.js</code> for
+        JavaScript, <code>NAMESPACE</code> for R, and
+        <code>+&lt;package_name&gt;/</code> for MATLAB. The entry script calls the
+        library and does not repeat its logic.
+      </p>
+      <p>
+        The Coder generates a documentation website for the library. The website
+        of a reproduction task is <code>reproduction/code/docs/index.html</code>.
+        The website of an innovation task is
+        <code>innovation/code/docs/index.html</code>. A documentation generator
+        writes the pages:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Language</th>
+            <th>Documentation generator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Python</td><td><code>pdoc</code> or MkDocs with <code>mkdocstrings</code></td></tr>
+          <tr><td>C, C++, MATLAB</td><td>Doxygen</td></tr>
+          <tr><td>Fortran</td><td>FORD or Doxygen</td></tr>
+          <tr><td>R</td><td><code>pkgdown</code></td></tr>
+          <tr><td>TypeScript</td><td>TypeDoc</td></tr>
+          <tr><td>JavaScript</td><td>JSDoc</td></tr>
+          <tr><td>SQL</td><td>SchemaSpy or <code>tbls</code></td></tr>
+        </tbody>
+      </table>
+      <p>
+        The Coder hand-writes a page only when the generator is absent or it
+        fails on the project, and then states the reason in
         <code>run_manifest.json</code>.
       </p>
 
@@ -443,11 +502,14 @@
   "modifications": []
 }</code></pre>
 
-      <h3>2. Reproduction code: <code>main.py</code> and <code>run_manifest.json</code></h3>
+      <h3>2. Reproduction code: the library, the entry script, and the documentation</h3>
       <p>
-        The Coder writes one main script with the three scale flags. The default
-        is <code>--minimal-scale</code>. The Coder runs only the minimal flag and
-        writes <code>run_manifest.json</code>:
+        The Coder writes one main entry script with the three scale flags. The
+        default is <code>--minimal-scale</code>. It refactors the reusable parts
+        into <code>reproduction/code/source/&lt;package_name&gt;/</code> and
+        generates the documentation website at
+        <code>reproduction/code/docs/index.html</code>. It runs only the minimal
+        flag and writes <code>run_manifest.json</code>:
       </p>
       <pre><code>{
   "scale": "minimal",
@@ -455,6 +517,13 @@
   "command": "python main.py --minimal-scale",
   "main_script": "main.py",
   "supports_scales": ["minimal", "reduced", "full"],
+  "language": "Python",
+  "library": "source/paperloop_reproduction",
+  "documentation": {
+    "generator": "pdoc",
+    "command": "pdoc source/paperloop_reproduction -o docs",
+    "index": "docs/index.html"
+  },
   "seed": 0,
   "device": "cpu",
   "outputs": ["output/metrics.json"]
@@ -474,10 +543,16 @@
       <h3>4. Innovation code</h3>
       <p>
         The Coder reads the <strong>Innovation direction</strong> section in
-        <code>reproduction/report/report.typ</code>. It writes one main script
-        with the same three scale flags and runs the minimal flag only. Its
+        <code>reproduction/report/report.typ</code>. It writes one main entry
+        script with the same three scale flags and runs the minimal flag only. It
+        refactors the reusable parts into
+        <code>innovation/code/source/&lt;package_name&gt;/</code> and generates
+        the documentation website at
+        <code>innovation/code/docs/index.html</code>. Its
         <code>run_manifest.json</code> adds <code>innovation_direction</code> and
-        <code>hypothesis</code>.
+        <code>hypothesis</code>, and records the same
+        <code>language</code>, <code>library</code>, and
+        <code>documentation</code> fields.
       </p>
 
       <h3>5. Innovation report</h3>

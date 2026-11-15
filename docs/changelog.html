@@ -29,10 +29,136 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.8.0 entry is the current release. The plugin
+        follow the Git tags. The 0.9.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-9-0">0.9.0</h2>
+        <p class="release-date">15 November 2026</p>
+        <p>
+          This release widens the Coder from Python to nine languages and makes
+          the refactored code a reusable library with a generated documentation
+          website. The seven stages, the five subagents, the eight tools, the
+          stage time limits, and the read-only policy are unchanged.
+        </p>
+
+        <h3>Language scope</h3>
+        <ul>
+          <li>
+            The Coder writes Python, C, C++, R, MATLAB, Fortran, TypeScript,
+            JavaScript, and SQL. The set covers more than 93 percent of the
+            academic papers that publish a code repository.
+          </li>
+          <li>
+            The Coder keeps the language of the original repository. It changes
+            the language only when the original code cannot run in this
+            environment, and it states the reason in
+            <code>run_manifest.json</code>.
+          </li>
+          <li>
+            The scale rules are language-neutral. The main entry script of the
+            refactored code accepts the three scale flags. When the language
+            cannot read a flag, <code>main.py</code> is a thin launcher that
+            passes the scale to the language entry point.
+          </li>
+          <li>
+            The Runtime subagent creates the environment with <code>uv</code> for
+            a Python project and with the native package manager of another
+            language.
+          </li>
+        </ul>
+
+        <h3>Reusable library</h3>
+        <ul>
+          <li>
+            The Coder treats each reusable part as a Plug and Play library at
+            <code>code/source/&lt;package_name&gt;/</code>. One module has one
+            responsibility and one public function or class for one task.
+          </li>
+          <li>
+            A public function takes its input as a parameter and stays pure when
+            the task allows it. The code has no global mutable state, no
+            hard-coded absolute path, and no side effect at import.
+          </li>
+          <li>
+            One module index file exports the public names:
+            <code>__init__.py</code> for Python, <code>index.ts</code> for
+            TypeScript, <code>index.js</code> for JavaScript,
+            <code>NAMESPACE</code> for R, and <code>+&lt;package_name&gt;/</code>
+            for MATLAB.
+          </li>
+          <li>
+            One dependency manifest declares the library dependencies:
+            <code>pyproject.toml</code>, <code>package.json</code>,
+            <code>DESCRIPTION</code>, <code>Project.toml</code>,
+            <code>fpm.toml</code>, or a <code>Makefile</code>. The tests are under
+            <code>source/tests/</code> and one usage example is under
+            <code>source/examples/</code>.
+          </li>
+          <li>
+            The entry script calls the library. It does not repeat the same logic.
+          </li>
+        </ul>
+
+        <h3>Documentation website</h3>
+        <ul>
+          <li>
+            The Coder generates a documentation website for the library. A
+            reproduction task writes to
+            <code>reproduction/code/docs/index.html</code>. An innovation task
+            writes to <code>innovation/code/docs/index.html</code>.
+          </li>
+          <li>
+            A documentation generator writes the pages: <code>pdoc</code> or
+            MkDocs with <code>mkdocstrings</code> for Python, Doxygen for C, C++,
+            MATLAB, and Fortran, <code>ford</code> for a Fortran project with FORD
+            comments, <code>pkgdown</code> for R, TypeDoc for TypeScript, JSDoc
+            for JavaScript, and SchemaSpy or <code>tbls</code> for SQL.
+          </li>
+          <li>
+            The Coder hand-writes a page only when the generator is absent or it
+            fails on the project. It then states the reason in
+            <code>run_manifest.json</code>.
+          </li>
+          <li>
+            The Coder checks that <code>docs/index.html</code> exists and that the
+            website lists each public module.
+          </li>
+          <li>
+            <code>run_manifest.json</code> gains the fields <code>language</code>,
+            <code>library</code>, and <code>documentation</code>. The last field
+            holds the generator name, the generator command, and the entry path.
+          </li>
+        </ul>
+
+        <h3>Artifact gate and audit</h3>
+        <ul>
+          <li>
+            The Coder artifact gate accepts any source file with a supported
+            extension instead of a <code>.py</code> file. It also requires
+            <code>docs/index.html</code> in the documentation directory.
+          </li>
+          <li>
+            The session layout gains <code>reproductionDocs</code> and
+            <code>innovationDocs</code>. The service creates both directories
+            with the other batch directories.
+          </li>
+          <li>
+            The audit adds the checks <code>reproduction_docs</code> and
+            <code>innovation_docs</code>. A check passes when the website has an
+            <code>index.html</code> entry. No metric and no
+            <code>rsi.json</code> field changes.
+          </li>
+          <li>
+            The Coder stage prompt and the Coder configuration Markdown name the
+            supported languages, the library rules, and the documentation rules.
+            The paths section and the required artifacts section of each Coder
+            stage name the library and the documentation website.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-8-0">0.8.0</h2>
