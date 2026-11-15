@@ -18,8 +18,7 @@
           <a href="contract.html">Subagent contract</a>
           <a href="changelog.html" aria-current="page">Changelog</a>
           <a href="natural_language_styles.html">Natural language</a>
-          <a href="python_code_styles.html">Python</a>
-          <a href="typescript_code_styles.html">TypeScript</a>
+          <a href="code_styles.html">Code styles</a>
           <a href="fonts.html">Fonts</a>
         </nav>
       </div>
@@ -30,10 +29,143 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.7.0 entry is the current release. The plugin
+        follow the Git tags. The 0.8.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-8-0">0.8.0</h2>
+        <p class="release-date">15 November 2026</p>
+        <p>
+          This release adds the help manual and the factory reset. A new user can
+          ask the plugin how to start, and an experienced user can return the app
+          data to a clean state. The release also replaces the three style guides
+          with the current two guides: natural language, and code styles for every
+          language. The seven stages, the five subagents, the eight tools, and the
+          read-only policy are unchanged.
+        </p>
+
+        <h3>The help manual</h3>
+        <ul>
+          <li>
+            <code>/paperloop_help [&lt;question&gt; ... | &lt;topic_id&gt;]</code>
+            prints one answer. With no argument it prints the topic list and the
+            live state of this machine.
+          </li>
+          <li>
+            The manual has twelve topics: <code>start</code>, <code>forward</code>,
+            <code>backward</code>, <code>validate</code>, <code>test</code>,
+            <code>feedback</code>, <code>inspect</code>, <code>appdata</code>,
+            <code>reset</code>, <code>scale</code>, <code>metrics</code>, and
+            <code>troubleshoot</code>.
+          </li>
+          <li>
+            A keyword score selects the topic. An ASCII keyword matches a whole word
+            and a Chinese keyword matches a substring. A question that matches no
+            topic prints the topic list with a short note, so the user always
+            receives a way forward.
+          </li>
+          <li>
+            Each answer ends with a <code>Now</code> block: the app-data path, the
+            parameters version, the session count, the pending gradient count, the
+            effective stage time limits, the last session, and the next command.
+          </li>
+          <li>
+            The manual makes no model call. It is deterministic, so a test asserts
+            the text of each branch.
+          </li>
+        </ul>
+
+        <h3>Factory reset</h3>
+        <ul>
+          <li>
+            <code>/paperloop_clear_appdata [--yes]</code> deletes the app data and
+            copies the packaged <code>default_app_data</code> seed back into it.
+          </li>
+          <li>
+            Without <code>--yes</code> the command prints a preview: the path, the
+            session count, the evaluation records, the pending and applied
+            gradients, and the parameter versions. It changes no file.
+          </li>
+          <li>An unknown option is an error that prints the usage line.</li>
+          <li>
+            The reset deletes <code>sessions/</code>, <code>evals/</code>,
+            <code>evolutions/</code>, <code>history/</code>, and
+            <code>configs_rw/</code>. It restores <code>configs_ro/v0/</code> and
+            <code>configs_rw/v0/CHECKPOINT.json</code>. Papers and sub-workspaces
+            stay in place.
+          </li>
+          <li>
+            The reset rejects a path that is the packaged seed or a child of it. The
+            plugin settings page keeps its own reset route.
+          </li>
+        </ul>
+
+        <h3>Main command</h3>
+        <ul>
+          <li>
+            <code>/paperloop help [&lt;question&gt;]</code>,
+            <code>/paperloop h</code>, and <code>/paperloop ?</code> call the help
+            manual.
+          </li>
+          <li>
+            <code>/paperloop clear</code> and <code>/paperloop reset</code> call the
+            factory reset.
+          </li>
+          <li>
+            The plugin now has eight commands and eight tools. Help and factory reset
+            are commands only, because a tool call cannot show a preview and wait for
+            a confirmation.
+          </li>
+        </ul>
+
+        <h3>Style guides</h3>
+        <ul>
+          <li>
+            Two guides replace the three earlier guides:
+            <code>natural_language_styles</code> and <code>code_styles</code>. The
+            code guide covers the general rules, Python, C, C++, R, MATLAB, Fortran,
+            TypeScript, JavaScript, SQL, and the fallback.
+          </li>
+          <li>
+            The general rules put readability first. They require a documentation
+            string for each function, type, module, and constant, set the line length
+            to 119 characters, and define the reproduction baseline:
+            <code>inputs/</code> read-only, <code>.outputs/</code> read-write, the tool
+            versions, and the random seed.
+          </li>
+          <li>
+            The stage prompt section "Python and execution" is now "Code style and
+            execution". It carries the general rules, the Python rules, and the scale
+            rules. The configuration Markdown carries the same rules.
+          </li>
+          <li>
+            The Chinese rule appears in the stage prompt and the system prompt:
+            Simplified Technical Chinese non-strict mode.
+          </li>
+          <li>
+            The documentation site has two style pages,
+            <code>natural_language_styles.html</code> and
+            <code>code_styles.html</code>. The two older pages are removed.
+            <code>AGENTS.md</code>, <code>CLAUDE.md</code>, and the API front page
+            name the two current guides.
+          </li>
+        </ul>
+
+        <h3>Documentation</h3>
+        <ul>
+          <li>
+            The app-data <code>README.md</code> lists the help command and the factory
+            reset.
+          </li>
+          <li>
+            The README command list names <code>paperloop_status</code>,
+            <code>paperloop_audit</code>, and <code>paperloop_config</code> as tools.
+            The earlier list showed <code>/paperloop_status</code> as a command.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-7-0">0.7.0</h2>

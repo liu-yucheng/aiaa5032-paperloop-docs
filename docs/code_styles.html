@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code style | PaperLoop</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="docs.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-title" href="index.html"
+          ><img src="logo-lockup.svg" alt="PaperLoop documentation"
+        /></a>
+        <nav class="site-nav" aria-label="Documentation pages">
+          <a href="index.html">API reference</a>
+          <a href="contract.html">Subagent contract</a>
+          <a href="changelog.html">Changelog</a>
+          <a href="natural_language_styles.html">Natural language</a>
+          <a href="code_styles.html">Code styles</a>
+          <a href="fonts.html">Fonts</a>
+        </nav>
+      </div>
+    </header>
+    <main class="page">
+      <p class="eyebrow">Style reference</p>
+      <h1>Code style</h1>
+      <p class="lede">
+        This page renders the reference file that all PaperLoop subagents follow.
+        The Markdown source is in <code>.refs/code-styles.md</code>.
+      </p>
+      <article class="markdown-body">
+<h1>Code Styles</h1>
+<p>Readability is the first priority.</p>
+<h2>General Rules</h2>
+<ul>
+<li>Use ASD-STE100 non-strict mode with academic US English fallback.</li>
+<li>Use meaningful full words for every name.
+No exceptions.</li>
+<li>Do not use an abbreviation.</li>
+<li>Write a documentation string for every function, type, module, and constant.
+No exceptions.</li>
+<li>In documentation, put one complete sentence on one or more complete lines.
+This rule applies to <code>README.md</code> and every other document.</li>
+<li>Use a maximum line length of 119 characters.</li>
+<li>Use line breaks to improve readability and to satisfy the line length limit.</li>
+<li>Write human-understandable, minimal, necessary tests.</li>
+<li>Reproduction baseline:<ul>
+<li>Put all input data in the read-only <code>inputs/</code> directory.</li>
+<li>Put all output data in the read-write and temporary <code>.outputs/</code> directory.</li>
+<li>Record the tool versions and the random seed for a reported result.</li>
+</ul>
+</li>
+<li>Use UTF-8 and LF.</li>
+<li>End every file with a newline.</li>
+</ul>
+<h2>Python</h2>
+<ul>
+<li>Use the Google Python Style Guide.</li>
+<li>Use 4-space indentation.</li>
+<li>Use <code>snake_case</code> for a function and a variable.</li>
+<li>Use type hints on public functions.</li>
+<li>Use a Google-style docstring.</li>
+<li>Use <code>ruff</code> for formatting and imports.</li>
+<li>Use <code>pytest</code> with <code>pytest.approx</code> for a numeric test.</li>
+</ul>
+<h2>C and C++</h2>
+<ul>
+<li>Use the Google C++ Style Guide for C++.</li>
+<li>Use the SEI CERT C Coding Standard for C.</li>
+<li>Use 2-space indentation.</li>
+<li>Use C17 for C and C++20 for C++.</li>
+<li>Use <code>snake_case</code> for a function and a variable.</li>
+<li>Use <code>CamelCase</code> for a type.</li>
+<li>Compile with warnings as errors.</li>
+<li>Do not invoke undefined behavior.</li>
+<li>Use fixed-width integer types.</li>
+<li>Use a Doxygen comment for every function, type, and constant.</li>
+</ul>
+<h3>C</h3>
+<ul>
+<li>Use <code>typedef struct</code> for a public struct type.</li>
+<li>Pair <code>malloc()</code> with <code>free()</code>.</li>
+<li>Use <code>snprintf()</code> instead of <code>sprintf()</code>.</li>
+<li>Use <code>size_t</code> for a size.</li>
+<li>Use Unity or CMocka for a test.</li>
+</ul>
+<h3>C++</h3>
+<ul>
+<li>Use RAII.</li>
+<li>Use <code>std::unique_ptr</code>, <code>std::vector</code>, and <code>std::string</code>.</li>
+<li>Do not use a raw <code>new</code> or <code>delete</code>.</li>
+<li>Use <code>enum class</code>.</li>
+<li>Use GoogleTest, Catch2, or doctest for a test.</li>
+</ul>
+<h2>R</h2>
+<ul>
+<li>Use the tidyverse style guide.</li>
+<li>Use 2-space indentation.</li>
+<li>Use <code>snake_case</code> for a function and a variable.</li>
+<li>Use <code>&lt;-</code> for assignment.</li>
+<li>Use <code>TRUE</code> and <code>FALSE</code>.</li>
+<li>Vectorize when a clear vector form exists.</li>
+<li>Use a roxygen2 comment.</li>
+<li>Use <code>testthat</code>.</li>
+<li>Call <code>set.seed()</code> before a random number.</li>
+</ul>
+<h2>MATLAB</h2>
+<ul>
+<li>Use MATLAB Style Guidelines 2.0.</li>
+<li>Use 4-space indentation.</li>
+<li>Use <code>lowerCamelCase</code> for a function and a variable.</li>
+<li>Use <code>UpperCamelCase</code> for a class.</li>
+<li>Use an <code>arguments</code> block for every public function.</li>
+<li>Preallocate an array before a loop.</li>
+<li>Use a help header.</li>
+<li>Use <code>matlab.unittest</code>.</li>
+<li>Call <code>rng(seed, &quot;twister&quot;)</code> before a random number.</li>
+</ul>
+<h2>Fortran</h2>
+<ul>
+<li>Use the Fortran-lang best practices.</li>
+<li>Use 2-space indentation.</li>
+<li>Use <code>snake_case</code> for a name.</li>
+<li>Use <code>implicit none</code> in every program unit.</li>
+<li>Use <code>intent</code> on every dummy argument.</li>
+<li>Use <code>allocatable</code> instead of <code>pointer</code>.</li>
+<li>Use <code>error stop</code> for a fatal error.</li>
+<li>Use a Doxygen or FORD comment.</li>
+<li>Use <code>test-drive</code> with <code>fpm</code>.</li>
+</ul>
+<h2>TypeScript</h2>
+<ul>
+<li>Use the Google TypeScript Style Guide.</li>
+<li>Use 2-space indentation.</li>
+<li>Use <code>camelCase</code> for a function and a variable.</li>
+<li>Use <code>PascalCase</code> for a type.</li>
+<li>Use <code>const</code> by default.</li>
+<li>Do not use <code>any</code>.</li>
+<li>Use explicit return types on exported functions.</li>
+<li>Use a JSDoc comment.</li>
+<li>Use <code>node:test</code>.</li>
+</ul>
+<h2>JavaScript</h2>
+<ul>
+<li>Use the Google JavaScript Style Guide.</li>
+<li>Use 2-space indentation.</li>
+<li>Use <code>camelCase</code> for a function and a variable.</li>
+<li>Use <code>PascalCase</code> for a class.</li>
+<li>Use <code>const</code> by default.</li>
+<li>Use <code>===</code> and <code>!==</code>.</li>
+<li>Use ECMAScript modules.</li>
+<li>Use a JSDoc comment.</li>
+<li>Use <code>node:test</code>.</li>
+</ul>
+<h2>SQL</h2>
+<ul>
+<li>Use one SQL style for the project.</li>
+<li>Use uppercase keywords.</li>
+<li>Use <code>snake_case</code> for a table and a column.</li>
+<li>Use explicit <code>JOIN</code> clauses.</li>
+<li>Do not use <code>SELECT *</code> in a production query.</li>
+<li>Use parameterized queries.</li>
+<li>Use a comment for every table, view, and function.</li>
+<li>Test a query against a temporary database.</li>
+</ul>
+<h2>Fallback</h2>
+<ul>
+<li>Use the General Rules.</li>
+<li>Use the nearest language section for a related language.</li>
+<li>Use the CLRS pseudocode conventions for pseudocode.</li>
+<li>State the input, output, index base, and complexity.</li>
+<li>Use <code>&lt;-</code> for assignment and <code>=</code> for equality.</li>
+<li>Use <code>require</code> and <code>ensure</code> for a contract.</li>
+</ul>
+
+      </article>
+    </main>
+  </body>
+</html>
