@@ -10,9 +10,9 @@
 # VSCode custom configs.
 **/.vscode/
 
-# [ Begin custom .gitignore . ]
-
-# dsh-plugin-template .gitignore .
+# [ End custom .gitignore . ]
+# [ Begin dsh-plugin-template .gitignore . ]
 node_modules/
 *.log
 .DS_Store
+# [ End dsh-plugin-template .gitignore . ]
