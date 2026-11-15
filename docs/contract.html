@@ -95,17 +95,20 @@
           <tr>
             <td><code>&lt;paper&gt;</code></td>
             <td>
-              One paper sub-workspace: <code>&lt;workspace&gt;/&lt;paper_stem&gt;</code>.
-              <code>paper_stem</code> is the PDF file name without its extension.
-              A duplicate name gets a <code>-2</code>, <code>-3</code> suffix.
+              One paper sub-workspace:
+              <code>&lt;workspace&gt;/&lt;session&gt;</code>. The sub-workspace
+              name and the session identifier are the same string.
             </td>
           </tr>
           <tr>
             <td><code>&lt;session&gt;</code></td>
             <td>
               One session identifier:
-              <code>&lt;YYYYMMDDTHHMMSS&gt;_&lt;short_topic&gt;</code>. The
-              plugin creates it for one paper in one split.
+              <code>&lt;YYYYMMDDTHHMMSS&gt;_&lt;paper_stem&gt;_&lt;rerun_count&gt;</code>.
+              <code>paper_stem</code> is the PDF file name without its
+              extension. <code>rerun_count</code> starts at <code>0</code> and
+              counts the earlier passes on the same paper in the same
+              workspace. The plugin creates the name for one paper in one split.
             </td>
           </tr>
           <tr>
@@ -136,7 +139,7 @@
 
       <h2>Directory layout</h2>
       <pre><code>&lt;workspace&gt;/
-  &lt;paper_stem&gt;/
+  &lt;session&gt;/
     original/
       paper/&lt;paper.pdf&gt;
       code/source/
