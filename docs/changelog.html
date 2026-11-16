@@ -29,10 +29,194 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.9.1 entry is the current release. The plugin
+        follow the Git tags. The 0.10.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-10-0">0.10.0</h2>
+        <p class="release-date">16 November 2026</p>
+        <p>
+          This release makes the human interface usable in an ordinary chat
+          session. A PaperLoop line now runs from the composer, shows its result
+          in the transcript, names its session, and feeds one PaperLoop view.
+          The seven stages, the five subagents, the stage time limits, and the
+          read-only configuration policy are unchanged.
+        </p>
+
+        <h3>Chat interface</h3>
+        <ul>
+          <li>
+            The plugin registers its own <code>/</code> input source for the
+            eight PaperLoop names. A PaperLoop line therefore runs in every chat
+            session, including a new empty session, and it does not depend on
+            the Harness command catalogue.
+          </li>
+          <li>
+            The plugin removes one leading <code>@</code> from each argument. A
+            line that names <code>@D:\papers\attention.pdf</code> now opens that
+            file, and it no longer reports
+            <code>The paper file does not exist</code>.
+          </li>
+          <li>
+            <code>/paperloop</code>, <code>/paperloop_forward</code>,
+            <code>/paperloop_validate</code>, and <code>/paperloop_test</code>
+            accept a paper PDF that the user attaches to the command. The other
+            commands refuse an attachment with one sentence and keep the draft.
+          </li>
+          <li>
+            A PaperLoop line that arrives as ordinary chat text runs through the
+            matching tool. The system prompt states this route, so the model
+            does not ask the user to retype the command.
+          </li>
+          <li>
+            The help manual gains the topic <code>chat</code>. It describes the
+            two input styles and the two ways to give a paper.
+          </li>
+        </ul>
+
+        <h3>Command results</h3>
+        <ul>
+          <li>
+            A PaperLoop command shows one command row in the transcript. The row
+            carries the state, the elapsed time, the loss, one row for each
+            session with the session identifier and the workspace path, and the
+            app data path.
+          </li>
+          <li>
+            The first PaperLoop command of a session that has no turn starts the
+            first turn. The command row, the context line, and the sidebar entry
+            therefore appear at once, and the session becomes persistent.
+          </li>
+          <li>
+            A command in a session that already has a turn appends one notice of
+            at most 120 characters. The transcript keeps the full output in the
+            command row.
+          </li>
+          <li>
+            A failed command reports one line in the composer. A successful
+            command stays silent in the composer, because the transcript row
+            carries the result.
+          </li>
+        </ul>
+
+        <h3>Session identity</h3>
+        <ul>
+          <li>
+            The first PaperLoop command of a session writes the title
+            <code>PaperLoop: &lt;command&gt; &lt;paper stem&gt;</code> once.
+            Later commands keep the title.
+          </li>
+          <li>
+            The plugin writes the title through the
+            <code>sessionTitle</code> service. When that service is absent, the
+            plugin appends the <code>session/title</code> event itself.
+          </li>
+        </ul>
+
+        <h3>PaperLoop view</h3>
+        <ul>
+          <li>
+            The plugin adds one <code>PaperLoop</code> tab next to Chat,
+            Trajectory, and Git Graph. The tab shows the parameters version, the
+            loss of each split as a sparkline, the checkpoint table, the rubric
+            heatmap, and the sessions with the artifact paths.
+          </li>
+          <li>
+            The tab fills the conversation column and scrolls vertically. Its
+            horizontal padding matches the toolbar above it.
+          </li>
+          <li>
+            The panel is read-only. It names each file, and one button copies a
+            path to the clipboard, because a browser does not open a
+            <code>file:</code> address from the Harness page.
+          </li>
+        </ul>
+
+        <h3>Parameters state route</h3>
+        <ul>
+          <li>
+            The read-only route
+            <code>GET /api/dsh-aiaa5032-paperloop-settings/state</code> returns
+            the projection that feeds the view, the command row, and the
+            progress strip.
+          </li>
+          <li>
+            The projection reports only what the files on disk support. An
+            absent loss is <code>null</code>, and the route never reports an
+            unverified result.
+          </li>
+        </ul>
+
+        <h3>Tools</h3>
+        <ul>
+          <li>
+            The plugin adds the tools <code>paperloop_help</code> and
+            <code>paperloop_clear_appdata</code>. The plugin now registers ten
+            tools and eight commands.
+          </li>
+          <li>
+            <code>paperloop_clear_appdata</code> changes nothing unless the call
+            sets <code>confirm</code> to <code>true</code>. Without the
+            confirmation it returns the inventory of a reset.
+          </li>
+        </ul>
+
+        <h3>Fixes</h3>
+        <ul>
+          <li>
+            <code>paperloop_status</code> no longer fails with
+            <code>value is not lossless JSON</code>. The tool output no longer
+            carries a property with the value <code>undefined</code>.
+          </li>
+          <li>
+            The plugin writes a surface notice only when the session already
+            holds the protected first surface head. A notice written before that
+            head made the stored session corrupt, and the history failed to
+            load.
+          </li>
+          <li>
+            The composer result panel is removed. The command row and the
+            PaperLoop view replace it.
+          </li>
+        </ul>
+      </article>
+
+      <article class="release">
+        <h2 id="v0-9-2">0.9.2</h2>
+        <p class="release-date">15 November 2026</p>
+        <p>
+          This release keeps the workspace root clean. One pass writes one paper
+          sub-workspace and no other plugin directory. The seven stages, the
+          five subagents, the eight tools, the stage time limits, and the
+          read-only policy are unchanged.
+        </p>
+
+        <h3>Workspace root</h3>
+        <ul>
+          <li>
+            One paper pass writes one directory
+            <code>&lt;workspace&gt;/&lt;timestamp&gt;_&lt;paper_stem&gt;_&lt;rerun_count&gt;/</code>
+            in the workspace root, also when the pass names one paper.
+          </li>
+          <li>
+            The plugin no longer writes an empty <code>original/</code>,
+            <code>reproduction/</code>, or <code>innovation/</code> directory
+            into the workspace root. A paper workspace directory holds only the
+            stages of its own session.
+          </li>
+          <li>
+            The plugin removes an empty placeholder directory, and an empty
+            <code>_session</code> directory of the app data, that an earlier
+            version wrote. A directory that holds a file is never removed.
+          </li>
+          <li>
+            The app data directories hold the configuration and the record of a
+            session. One session writes one record in each app data directory.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-9-1">0.9.1</h2>

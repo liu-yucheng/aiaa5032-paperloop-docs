@@ -89,7 +89,9 @@
             <td><code>&lt;workspace&gt;</code></td>
             <td>
               The current DeepSeek Harness session workspace. The plugin never
-              selects a second workspace root.
+              selects a second workspace root. The root holds one
+              <code>&lt;paper&gt;</code> directory for each pass and no other
+              plugin directory.
             </td>
           </tr>
           <tr>
@@ -97,7 +99,8 @@
             <td>
               One paper sub-workspace:
               <code>&lt;workspace&gt;/&lt;session&gt;</code>. The sub-workspace
-              name and the session identifier are the same string.
+              name and the session identifier are the same string. One pass
+              writes one sub-workspace, also when the pass names one paper.
             </td>
           </tr>
           <tr>
@@ -776,6 +779,14 @@
             <td>The shortcut of the backward pass.</td>
           </tr>
           <tr>
+            <td><code>/paperloop_help</code></td>
+            <td>The shortcut of the help manual.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop_clear_appdata</code></td>
+            <td>The shortcut of the factory reset.</td>
+          </tr>
+          <tr>
             <td><code>paperloop_forward</code></td>
             <td>The tool form of the training split.</td>
           </tr>
@@ -813,8 +824,88 @@
             <td><code>paperloop_config</code></td>
             <td>Show, validate, list, or write one subagent configuration.</td>
           </tr>
+          <tr>
+            <td><code>paperloop_help</code></td>
+            <td>
+              Print the help manual with the live state, or answer one question.
+            </td>
+          </tr>
+          <tr>
+            <td><code>paperloop_clear_appdata</code></td>
+            <td>
+              List what a reset deletes, or delete the app data when the call
+              confirms it.
+            </td>
+          </tr>
         </tbody>
       </table>
+
+      <h2>Chat interface</h2>
+      <p>
+        A user starts a PaperLoop action in four ways. Each way runs the same
+        handler and writes the same records:
+      </p>
+      <ul>
+        <li>
+          The line <code>/paperloop_forward &lt;paper.pdf ...&gt;</code> in the
+          composer. The plugin registers its own <code>/</code> input source for
+          the eight PaperLoop names, so the line runs in every chat session,
+          including a new empty session.
+        </li>
+        <li>
+          The same line with the paper attached to the command. The plugin
+          converts each attached file into its host path.
+        </li>
+        <li>
+          Ordinary chat text, such as
+          <code>run the training split on this paper</code>. The model calls the
+          matching tool.
+        </li>
+        <li>
+          The tool call <code>paperloop_forward</code> with one or more paper
+          paths.
+        </li>
+      </ul>
+      <p>
+        The plugin removes one leading <code>@</code> from each argument, because
+        the composer writes a file reference in that form. A relative path
+        resolves against the session workspace.
+      </p>
+      <p>
+        A command writes one command row in the transcript. The row carries the
+        state, the elapsed time, the loss, one row for each session with the
+        session identifier and the workspace path, and the app data path. The
+        first PaperLoop command of a session that has no turn starts the first
+        turn, so the row, the context line, and the sidebar entry appear at once.
+        A command in a session that already has a turn appends one notice of at
+        most 120 characters. The plugin writes that notice only when the session
+        already holds the protected first surface head.
+      </p>
+      <p>
+        The first PaperLoop command of a session writes the title
+        <code>PaperLoop: &lt;command&gt; &lt;paper stem&gt;</code> once, and
+        later commands keep it.
+      </p>
+
+      <h2>PaperLoop view</h2>
+      <p>
+        The plugin registers one <code>PaperLoop</code> tab next to Chat,
+        Trajectory, and Git Graph. The tab reads one projection from the
+        read-only route
+        <code>GET /api/dsh-aiaa5032-paperloop-settings/state</code> and shows the
+        parameters version, the loss of each split, the checkpoint table, the
+        rubric heatmap, and the sessions with the artifact paths.
+      </p>
+      <p>
+        The view is read-only. It names each file, and one button copies a path
+        to the clipboard. A browser does not open a <code>file:</code> address
+        from the Harness page, so the view does not offer a link.
+      </p>
+      <p>
+        The projection reports only what the files on disk support. An absent
+        loss is <code>null</code>, and the view never shows an unverified
+        result.
+      </p>
 
       <h2>Scorecard</h2>
       <p>
