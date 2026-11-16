@@ -29,10 +29,187 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.10.0 entry is the current release. The plugin
+        follow the Git tags. The 0.11.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-11-0">0.11.0</h2>
+        <p class="release-date">16 November 2026</p>
+        <p>
+          This release adds the exploration loop, the code layout of the
+          training prompt, and the runtime product. A forward pass now runs seven
+          stages: runtime setup, reproduction code, reproduction report with up
+          to three exploration rounds, innovation code, innovation report, and
+          self-evaluation. Self-evolution stays in the backward pass as stage 8.
+        </p>
+
+        <h3>Stages and exploration</h3>
+        <ul>
+          <li>
+            One stage joins the forward pass: <code>exploration_code</code>. The
+            Researcher writes the exploration analysis as the last part of
+            <code>reproduction_report</code>, so a round runs the Coder and then
+            the Researcher again.
+          </li>
+          <li>
+            The Researcher asks for code by writing one instruction file in
+            <code>exploration/instructions/</code>, named
+            <code>round_&lt;n&gt;.md</code>, and delegates the work to the Coder.
+            The Researcher writes no code.
+          </li>
+          <li>
+            The reproduction report writes
+            <code>exploration/directions/decision.json</code> with
+            <code>exploreMore</code>, <code>selectedDirection</code>, and
+            <code>reason</code>. The plugin stops the loop at the round limit
+            <code>maxExplorationRounds</code>, at the budget
+            <code>explorationBudgetSeconds</code>, at the session deadline, or
+            when a decision asks for no round.
+          </li>
+          <li>
+            The eight stage time limits are 300, 300, 240, 120, 200, 180, 120,
+            and 90 seconds. They add up to 25 minutes and 50 seconds, and the
+            exploration rounds use a budget of 12 minutes.
+          </li>
+        </ul>
+
+        <h3>Runtime</h3>
+        <ul>
+          <li>
+            The product of the Runtime stage is the debugged original code with
+            <code>pyproject.toml</code> and <code>main.py</code>. The subagent
+            keeps the modification of the original code as small as possible.
+          </li>
+          <li>
+            <code>main.py</code> accepts <code>--minimal-scale</code>,
+            <code>--reduced-scale</code>, and <code>--full-scale</code>. The
+            Runtime subagent runs the minimal scale once and finishes within 30
+            seconds. It never runs another scale.
+          </li>
+          <li>
+            <code>minimal_run.json</code> records the scale, the command, the
+            seconds, the exit code, the device, the device support, and the
+            <code>uv</code> command.
+          </li>
+        </ul>
+
+        <h3>Coder</h3>
+        <ul>
+          <li>
+            Every code stage writes one layout:
+            <code>{source,docs,inputs,outputs}</code>. The output directory is a
+            normal directory, so a later stage reads it read-only.
+          </li>
+          <li>
+            The Coder copies the components of an earlier stage and never
+            modifies an earlier codebase. The plugin stores a fingerprint of the
+            reproduction code and reports a change.
+          </li>
+          <li>
+            The reproduction and the innovation task run the code twice: the
+            minimal scale, then the reduced scale when the minimal run passed,
+            and the minimal scale again when it did not. The exploration task
+            runs the minimal scale once.
+          </li>
+          <li>
+            The reduced scale must finish within 120 seconds. The full scale is a
+            reference to the paper scale, not a strict limit, and no subagent runs
+            it.
+          </li>
+          <li>
+            The Runtime and the Coder manage Python and every dependency with
+            <code>uv</code>. Each code stage supports a CPU-only device and a CPU
+            with a GPU, and the manifest records both.
+          </li>
+        </ul>
+
+        <h3>Reports</h3>
+        <ul>
+          <li>
+            The reproduction report is concise and critical, is about the
+            computational results of the paper, names its limitations and its
+            future work, and ends with the one selected exploration direction.
+          </li>
+          <li>
+            The report cites a result of the paper instead of claiming that the
+            minimal run reproduced it.
+          </li>
+          <li>
+            Each report carries at least one PNG image of at most 3840 by 2160
+            pixels and at least one MP4 video of at most 30 seconds at 1920 by
+            1080 pixels.
+          </li>
+          <li>
+            Each media file has one entry in <code>media/media.json</code> with
+            a title and a frontpage flag. One entry is the frontpage, and the
+            report body contains the title and the file name of every media
+            file.
+          </li>
+          <li>
+            The innovation report clearly distinguishes the explored direction
+            from the directions of the original paper.
+          </li>
+          <li>
+            Every file under the paper workspace uses the non-strict mode of
+            ASD-STE100 with academic US English fallback. The optional
+            <code>--language &lt;language_and_style_specification&gt;</code>
+            argument of <code>/paperloop_forward</code>,
+            <code>/paperloop_validate</code>, and <code>/paperloop_test</code>
+            replaces that default for one pass. Every file under the app data
+            keeps the default without exception.
+          </li>
+        </ul>
+
+        <h3>Budget and help</h3>
+        <ul>
+          <li>
+            The stage limits of stages 1 to 7 add up to 1140 seconds and the
+            exploration rounds draw from a shared budget of 480 seconds, so a
+            complete forward pass stays inside the 30-minute budget.
+          </li>
+          <li>
+            A validation pass and a test pass keep a wall clock of 24 minutes,
+            because neither writes a gradient.
+          </li>
+          <li>
+            The plugin settings page sets the time limit of each stage, shows the
+            four budgets, and warns when the stage limits and the exploration
+            budget exceed the forward budget.
+          </li>
+          <li>
+            <code>/paperloop_help</code> prints one compact page. The optional
+            <code>--topics &lt;topics&gt;</code> argument asks a subagent for a
+            detailed page, which the plugin caches in
+            <code>&lt;app-data&gt;/help/</code>.
+          </li>
+        </ul>
+
+        <h3>Evaluation</h3>
+        <ul>
+          <li>
+            The Evaluator scores the five tasks, not the five forward stages.
+            <code>evals.json</code> has schema version 2 and holds
+            <code>tasks</code>, <code>totals</code>, and <code>metrics</code>.
+          </li>
+          <li>
+            A task entry has the product, a quality score from 0 to 5, one
+            critical evaluation, the human hours, the reason for the estimate,
+            and the evidence.
+          </li>
+          <li>
+            The plugin writes no rubric file. The loss is the mean of
+            <code>1 - qualityScore / 5</code> over the five tasks.
+          </li>
+          <li>
+            The scorecard reports task completion rate, human intervention
+            burden, delegation completion cost, output parity, report compile
+            rate, and media validity rate. The rubric agreement metric is
+            removed.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-10-0">0.10.0</h2>
