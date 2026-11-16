@@ -59,9 +59,14 @@
       <div class="callout">
         <p>
           <strong>Time budget.</strong> A forward pass must finish within 30
-          minutes. The seven stage time limits add up to 28 minutes. Stage 7
-          runs in a separate backward pass and does not count against a forward
-          pass.
+          minutes. The stage limits of stages 1 to 7 add up to 1140 seconds, and
+          the exploration rounds draw from a shared budget of 480 seconds, so the
+          two together stay inside the 1800-second budget. Stage 8 runs in a
+          separate backward pass and does not count against a forward pass. A
+          validation pass and a test pass keep a wall clock of 24 minutes,
+          because neither writes a gradient. A human sets each stage time limit
+          on the plugin settings page; a field value of 0 keeps the value of
+          <code>configs_ro/v&lt;N&gt;/rsi.json</code>.
         </p>
       </div>
 
@@ -146,21 +151,38 @@
     original/
       paper/&lt;paper.pdf&gt;
       code/source/
+      code/pyproject.toml
+      code/main.py
+      code/RUNTIME_NOTES.md
+      code/minimal_run.json
     reproduction/
-      code/source/
       code/source/&lt;package_name&gt;/
+      code/inputs/
+      code/outputs/
       code/docs/index.html
-      code/output/
+      code/run_manifest.json
       report/report.typ
       report/report.pdf
+      report/media/media.json
       report/media/
-    innovation/
-      code/source/
+    exploration/
+      directions/directions.md
+      directions/decision.json
+      instructions/round_&lt;n&gt;.md
       code/source/&lt;package_name&gt;/
+      code/inputs/
+      code/outputs/
       code/docs/index.html
-      code/output/
+      code/run_manifest.json
+    innovation/
+      code/source/&lt;package_name&gt;/
+      code/inputs/
+      code/outputs/
+      code/docs/index.html
+      code/run_manifest.json
       report/report.typ
       report/report.pdf
+      report/media/media.json
       report/media/
 
 &lt;app-data&gt;/
@@ -168,11 +190,11 @@
   configs_rw/vK/{CHECKPOINT.json,&lt;subagent&gt;/{config.json,prompt.md}}
   sessions/&lt;session&gt;/{input.json,session.json,state.json}
   history/&lt;session&gt;/
-  evals/pending/&lt;session&gt;/{evals.json,evals.md,rubrics.json,gradient.json,loss.json,feedback.json,scores.json,scores.md}
+  evals/pending/&lt;session&gt;/{evals.json,evals.md,gradient.json,loss.json,feedback.json,scores.json,scores.md}
   evals/applied/&lt;session&gt;/
-  evals/validated/&lt;session&gt;/{loss.json,evals.json,rubrics.json}
+  evals/validated/&lt;session&gt;/{loss.json,evals.json}
   evals/validated/decisions.json
-  evals/tested/&lt;session&gt;/{loss.json,evals.json,rubrics.json}
+  evals/tested/&lt;session&gt;/{loss.json,evals.json}
   evals/tested/reports.json
   evolutions/pending/&lt;session&gt;/{plan.json,session.json}
   evolutions/applied/&lt;session&gt;/</code></pre>
@@ -204,14 +226,14 @@
           <tr>
             <td>Forward pass</td>
             <td>
-              Stages 1 to 6. The pass writes one <code>loss.json</code> for the
+              Stages 1 to 8. The pass writes one <code>loss.json</code> for the
               paper.
             </td>
           </tr>
           <tr>
             <td>Loss function</td>
             <td>
-              The evaluator. The plugin reduces the five stage scores to one
+              The evaluator. The plugin reduces the five task scores to one
               scalar loss.
             </td>
           </tr>
@@ -225,7 +247,7 @@
           <tr>
             <td>Optimizer step</td>
             <td>
-              Stage 7. It writes <code>configs_rw/v&lt;K+1&gt;/</code> and one
+              Stage 9. It writes <code>configs_rw/v&lt;K+1&gt;/</code> and one
               <code>CHECKPOINT.json</code>.
             </td>
           </tr>
@@ -239,8 +261,8 @@
         </tbody>
       </table>
       <p>
-        The loss of one paper is <code>mean(1 - score / 5)</code> over the five
-        forward stages. A stage without a score counts as 1.0. The loss stays
+        The loss of one paper is <code>mean(1 - qualityScore / 5)</code> over the
+        five tasks. A task without a score counts as 1.0. The loss stays
         between 0 and 1. A lower loss is better. The plugin writes the loss. A
         subagent must not write <code>loss.json</code>.
       </p>
@@ -262,14 +284,15 @@
       <figure class="figure">
         <img
           src="subagent-stage-map.svg"
-          alt="Seven stage cards. Stage 1 runtime setup runs the runtime subagent. Stage 2 reproduction refactoring and stage 4 innovation experiment run the coder. Stage 3 reproduction analysis and stage 5 innovation analysis run the researcher. Stage 6 self-evaluation runs the evaluator. Stage 7 evolution planning runs the evolver."
+          alt="Eight stage cards in two rows. Stage 1 runtime setup runs the runtime subagent. Stage 2 reproduction code, stage 4 exploration code, and stage 5 innovation code run the coder. Stage 3 reproduction report and stage 6 innovation report run the researcher. Stage 7 self-evaluation runs the evaluator. Stage 8 self-evolution runs the evolver."
           width="980"
-          height="470"
+          height="540"
         />
         <figcaption>
           Figure 2. The subagent of each stage and the artifact that the stage
-          must write. Stage 7 writes the next parameters version, and the next
-          epoch starts again at stage 1.
+          must write. Stage 3 ends with the exploration analysis, and stages 4
+          and 3 repeat for each exploration round. Stage 8 writes the next
+          parameters version, and the next epoch starts again at stage 1.
         </figcaption>
       </figure>
 
@@ -288,7 +311,7 @@
           Create the session directories and write
           <code>&lt;app-data&gt;/sessions/&lt;session&gt;/input.json</code>.
         </li>
-        <li>Run stages 1 to 6 in order.</li>
+        <li>Run stages 1 to 7 in order.</li>
         <li>
           Audit the session and write <code>scores.json</code> and
           <code>scores.md</code> into the evaluation directory.
@@ -322,9 +345,7 @@
             <td><code>runtime_setup</code></td>
             <td>Runtime</td>
             <td>
-              <code>original/code/source/</code>,
-              <code>RUNTIME_NOTES.md</code>,
-              <code>minimal_run.json</code>
+              <code>original/code/source/</code>, <code>pyproject.toml</code>, <code>main.py</code>, <code>RUNTIME_NOTES.md</code>, <code>minimal_run.json</code>
             </td>
             <td>300 s</td>
           </tr>
@@ -333,11 +354,7 @@
             <td><code>reproduction_code</code></td>
             <td>Coder</td>
             <td>
-              <code>reproduction/code/source/</code> with the library
-              <code>source/&lt;package_name&gt;/</code>,
-              <code>reproduction/code/docs/index.html</code>,
-              <code>run_manifest.json</code>,
-              <code>reproduction/code/output/</code>
+              <code>reproduction/code/{source,docs,inputs,outputs}/</code>, the library <code>source/&lt;package_name&gt;/</code>, <code>docs/index.html</code>, <code>run_manifest.json</code>
             </td>
             <td>300 s</td>
           </tr>
@@ -346,65 +363,70 @@
             <td><code>reproduction_report</code></td>
             <td>Researcher</td>
             <td>
-              <code>reproduction/report/report.typ</code>,
-              <code>report.pdf</code>, <code>media/</code>
+              <code>reproduction/report/{report.typ,report.pdf,media/media.json,media/}</code>,
+              <code>exploration/directions/decision.json</code>,
+              <code>exploration/instructions/round_&lt;n&gt;.md</code>
             </td>
-            <td>300 s</td>
+            <td>240 s</td>
           </tr>
           <tr>
             <td>4</td>
-            <td><code>innovation_code</code></td>
+            <td><code>exploration_code</code></td>
             <td>Coder</td>
             <td>
-              <code>innovation/code/source/</code> with the library
-              <code>source/&lt;package_name&gt;/</code>,
-              <code>innovation/code/docs/index.html</code>,
-              <code>run_manifest.json</code>,
-              <code>innovation/code/output/</code>
+              <code>exploration/code/{source,docs,inputs,outputs}/</code>, the library, <code>docs/index.html</code>, <code>run_manifest.json</code>
             </td>
-            <td>240 s</td>
+            <td>120 s</td>
           </tr>
           <tr>
             <td>5</td>
-            <td><code>innovation_report</code></td>
-            <td>Researcher</td>
+            <td><code>innovation_code</code></td>
+            <td>Coder</td>
             <td>
-              <code>innovation/report/report.typ</code>,
-              <code>report.pdf</code>, <code>media/</code>
+              <code>innovation/code/{source,docs,inputs,outputs}/</code>, the library, <code>docs/index.html</code>, <code>run_manifest.json</code>
             </td>
-            <td>240 s</td>
+            <td>200 s</td>
           </tr>
           <tr>
             <td>6</td>
-            <td><code>self_eval</code></td>
-            <td>Evaluator</td>
+            <td><code>innovation_report</code></td>
+            <td>Researcher</td>
             <td>
-              <code>evals.json</code>, <code>evals.md</code>,
-              <code>rubrics.json</code>, <code>gradient.json</code> in
-              <code>evals/pending/&lt;session&gt;/</code>
+              <code>innovation/report/{report.typ,report.pdf,media/}</code>
             </td>
             <td>180 s</td>
           </tr>
           <tr>
             <td>7</td>
+            <td><code>self_eval</code></td>
+            <td>Evaluator</td>
+            <td>
+              <code>evals.json</code>, <code>evals.md</code>, <code>gradient.json</code> in <code>evals/pending/&lt;session&gt;/</code>
+            </td>
+            <td>120 s</td>
+          </tr>
+          <tr>
+            <td>8</td>
             <td><code>self_evolve</code></td>
             <td>Evolver</td>
             <td>
-              <code>configs_rw/v(K+1)/</code> with five
-              <code>{config.json,prompt.md}</code> pairs and
-              <code>EVOLUTION.md</code>
+              <code>configs_rw/v(K+1)/</code> with five <code>{config.json,prompt.md}</code> pairs and <code>EVOLUTION.md</code>
             </td>
-            <td>120 s</td>
+            <td>90 s</td>
           </tr>
         </tbody>
       </table>
 
       <h2>Measurement scale policy</h2>
       <p>
-        Runtime and Coder do not produce a computational result. They prove that
-        the code runs without a bug. A minimal setup must finish in 30 seconds or
-        less. Runtime and Coder never start a reduced-scale or a full-scale
-        experiment.
+        The subagents do not reproduce the computational result of the paper. A
+        minimal run proves that the code runs without a bug. The Runtime subagent
+        runs the minimal scale once and must finish within
+        <code>minimalScaleSeconds</code> seconds, which is 30 by default. The
+        Coder runs the minimal scale and, when the minimal run passed, the reduced
+        scale. The reduced scale must finish within 120 seconds. The full scale is
+        a reference to the computing scale of the paper, not a strict limit, and
+        no subagent runs it.
       </p>
       <table>
         <thead>
@@ -418,28 +440,50 @@
           <tr>
             <td><code>--minimal-scale</code></td>
             <td>30 s or less</td>
-            <td>The default of the main script and of every subagent.</td>
+            <td>
+              The default of the main script. The Runtime subagent runs it once.
+              The Coder runs it first on a reproduction, an exploration, and an
+              innovation task.
+            </td>
           </tr>
           <tr>
             <td><code>--reduced-scale</code></td>
-            <td>5 minutes or less</td>
-            <td>A human user, after the session ends.</td>
+            <td>120 s or less</td>
+            <td>
+              The Coder, on a reproduction and an innovation task, after the
+              minimal run passed.
+            </td>
           </tr>
           <tr>
             <td><code>--full-scale</code></td>
             <td>No time limit</td>
-            <td>A human user, after the session ends.</td>
+            <td>
+              A human user, after the session ends. The Coder records the paper
+              scale as a reference only.
+            </td>
           </tr>
         </tbody>
       </table>
       <p>
         The main entry script accepts exactly one scale flag:
         <code>&lt;main_script&gt; [--minimal-scale | --reduced-scale | --full-scale]</code>.
-        The script writes the selected scale and the measured seconds to
-        <code>run_manifest.json</code>. The entry script uses the language of the
-        refactored code. When that language cannot read a command-line flag,
-        <code>main.py</code> is a thin launcher that passes the scale to the
+        The script writes each run to the <code>runs</code> array of
+        <code>run_manifest.json</code> with the scale, the command, the measured
+        seconds, the exit code, and the device. The entry script uses the language
+        of the refactored code. When that language cannot read a command-line
+        flag, <code>main.py</code> is a thin launcher that passes the scale to the
         language entry point.
+      </p>
+      <p>
+        Every stage runs on a CPU-only device. The Coder also supports a CPU with
+        a GPU. A manifest records the support in <code>deviceSupport</code> as the
+        list <code>["cpu", "cpu+gpu"]</code>.
+      </p>
+      <p>
+        The Runtime and the Coder manage Python and every dependency with
+        <code>uv</code>. The Python project holds its dependencies in
+        <code>pyproject.toml</code>, and each manifest records the executed
+        <code>uv</code> command.
       </p>
 
       <h2>Coder scope</h2>
@@ -463,9 +507,10 @@
       <p>
         The Coder generates a documentation website for the library. The website
         of a reproduction task is <code>reproduction/code/docs/index.html</code>.
-        The website of an innovation task is
-        <code>innovation/code/docs/index.html</code>. A documentation generator
-        writes the pages:
+        The website of an exploration task is
+        <code>exploration/code/docs/index.html</code>. The website of an
+        innovation task is <code>innovation/code/docs/index.html</code>. A
+        documentation generator writes the pages:
       </p>
       <table>
         <thead>
@@ -491,36 +536,56 @@
       </p>
 
       <h2>Stage artifacts</h2>
-      <h3>1. Runtime: <code>RUNTIME_NOTES.md</code> and <code>minimal_run.json</code></h3>
+
+      <h3>1. Runtime: <code>pyproject.toml</code>, <code>main.py</code>, <code>minimal_run.json</code></h3>
       <p>
         The Runtime subagent finds the code link in the paper when the input has
         no repository. It copies the source into
-        <code>original/code/source/</code>, creates one environment, and runs
-        the smallest command that imports the code and starts it.
-        <code>minimal_run.json</code> holds:
+        <code>original/code/source/</code> and debugs the source with the
+        smallest possible modification. The product of the stage is the debugged
+        original code with one <code>pyproject.toml</code> that names every
+        dependency, and one <code>main.py</code> with the three scale flags. The
+        subagent creates one environment with <code>uv</code> and runs
+        <code>main.py --minimal-scale</code> once, as fast as possible, on a
+        CPU-only device and on a CPU with a GPU. It writes
+        <code>RUNTIME_NOTES.md</code> and <code>minimal_run.json</code>:
       </p>
       <pre><code>{
   "scale": "minimal",
+  "command": "uv run python main.py --minimal-scale",
   "seconds": 12.4,
-  "command": "uv run python -c 'import package'",
   "device": "cpu",
+  "deviceSupport": ["cpu", "cpu+gpu"],
+  "uv": { "used": true, "command": "uv sync" },
+  "exitCode": 0,
   "status": "ok",
   "modifications": []
 }</code></pre>
 
-      <h3>2. Reproduction code: the library, the entry script, and the documentation</h3>
+      <h3>2. Reproduction code: the layout, the library, the entry script, and the documentation</h3>
+      <p>
+        The Coder copies the debugged original code into
+        <code>reproduction/code/</code> and refactors it for readability and
+        module reuse. The stage writes one directory layout in every code stage:
+        <code>{source,docs,inputs,outputs}</code>. The <code>source</code>
+        directory holds the library and the entry script, the <code>docs</code>
+        directory holds the documentation website, the <code>inputs</code>
+        directory holds the read-only input data, and the <code>outputs</code>
+        directory holds the output data. The Coder never modifies the original
+        code or the reproduction code.
+      </p>
       <p>
         The Coder writes one main entry script with the three scale flags. The
         default is <code>--minimal-scale</code>. It refactors the reusable parts
-        into <code>reproduction/code/source/&lt;package_name&gt;/</code> and
+        into <code>reproduction/code/source/&lt;package_name&gt;/</code>,
         generates the documentation website at
-        <code>reproduction/code/docs/index.html</code>. It runs only the minimal
-        flag and writes <code>run_manifest.json</code>:
+        <code>reproduction/code/docs/index.html</code>, and runs the code twice:
+        the minimal scale, then the reduced scale when the minimal run passed, and
+        the minimal scale again when it did not. <code>run_manifest.json</code>
+        holds:
       </p>
       <pre><code>{
-  "scale": "minimal",
-  "seconds": 21.0,
-  "command": "python main.py --minimal-scale",
+  "layout": "source/inputs/outputs",
   "main_script": "main.py",
   "supports_scales": ["minimal", "reduced", "full"],
   "language": "Python",
@@ -530,75 +595,162 @@
     "command": "pdoc source/paperloop_reproduction -o docs",
     "index": "docs/index.html"
   },
+  "runs": [
+    { "scale": "minimal", "command": "uv run python main.py --minimal-scale",
+      "seconds": 21.0, "exitCode": 0, "device": "cpu" },
+    { "scale": "reduced", "command": "uv run python main.py --reduced-scale",
+      "seconds": 94.2, "exitCode": 0, "device": "cpu" }
+  ],
+  "deviceSupport": ["cpu", "cpu+gpu"],
+  "uv": { "used": true, "command": "uv sync" },
   "seed": 0,
-  "device": "cpu",
-  "outputs": ["output/metrics.json"]
+  "outputs": ["outputs/metrics.json"]
 }</code></pre>
 
-      <h3>3. Reproduction report and the innovation direction</h3>
+      <h3>3. Reproduction report, media, and the exploration decision</h3>
       <p>
         The Researcher writes <code>reproduction/report/report.typ</code> and
-        compiles <code>report.pdf</code>. The report states which claims the
-        minimal run supports and which claims it does not test. It then adds one
-        section with the heading <strong>Innovation direction</strong>. That
-        section derives one direction from the limitations and the future work
-        in the original paper. The heading and the direction are the handoff to
-        stage 4.
+        compiles <code>report.pdf</code>. The report is concise and critical. It
+        is about the computational results of the paper: it cites the result of
+        the paper and states which claim the minimal run supports and which claim
+        it does not test. The report must not state a paper result as reproduced.
+        It ends with a heading that names the one exploration direction that the
+        report selects.
       </p>
-
-      <h3>4. Innovation code</h3>
       <p>
-        The Coder reads the <strong>Innovation direction</strong> section in
-        <code>reproduction/report/report.typ</code>. It writes one main entry
-        script with the same three scale flags and runs the minimal flag only. It
-        refactors the reusable parts into
-        <code>innovation/code/source/&lt;package_name&gt;/</code> and generates
-        the documentation website at
-        <code>innovation/code/docs/index.html</code>. Its
-        <code>run_manifest.json</code> adds <code>innovation_direction</code> and
-        <code>hypothesis</code>, and records the same
-        <code>language</code>, <code>library</code>, and
-        <code>documentation</code> fields.
+        The report carries at least one image and at least one video, and the
+        report body names each media file:
+      </p>
+      <ul>
+        <li>
+          A PNG image generated by Python, at most 3840 pixels wide and at most
+          2160 pixels high.
+        </li>
+        <li>
+          An MP4 video of at most 30 seconds at 1920 by 1080 pixels, made with
+          <code>manim</code> or another Python tool.
+        </li>
+      </ul>
+      <p>
+        Every media file has one title, and the report shows one of them on the
+        front page. The stage writes the media index:
+      </p>
+      <pre><code>{
+  "items": [
+    { "file": "curve.png", "title": "Validation loss of the minimal run", "frontpage": true },
+    { "file": "gate.mp4", "title": "Gate activation over one batch", "frontpage": false }
+  ]
+}</code></pre>
+      <p>
+        The report text must contain the title and the file name of every media
+        file.
+      </p>
+      <p>
+        The stage writes the exploration decision to
+        <code>exploration/directions/decision.json</code>:
+      </p>
+      <pre><code>{
+  "schemaVersion": 1,
+  "round": 0,
+  "exploreMore": true,
+  "selectedDirection": "Replace the fixed window with a learned gate.",
+  "reason": "The limitation paragraph names the window length."
+}</code></pre>
+
+      <p>
+        When the decision asks for another round, the Researcher delegates the
+        code. It writes one instruction file in
+        <code>exploration/instructions/</code>, named
+        <code>round_&lt;n&gt;.md</code> for the round that it asks for. The file
+        names the direction, the question of the round, the input data, the
+        expected output, and the run command. The Researcher writes no code.
       </p>
 
-      <h3>5. Innovation report</h3>
+      <h3>4. Exploration code</h3>
+      <p>
+        The Coder reads the instruction file of its round, the decision, and the
+        reproduction report, then tests the selected direction. It copies the components that it needs and must not
+        modify the reproduction code. It writes
+        <code>exploration/code/{source,docs,inputs,outputs}/</code>, a library, a
+        documentation website, and one <code>run_manifest.json</code>. The stage
+        runs the code once at <code>--minimal-scale</code> only, and its manifest
+        adds <code>exploration_direction</code>. A negative result is a valid
+        result.
+      </p>
+
+      <p>
+        After the exploration code, the plugin runs stage 3 again. That pass
+        replaces the body of the final heading with the analysis of the round,
+        compiles <code>report.pdf</code> again, rewrites
+        <code>decision.json</code> with the number of the round, and writes the
+        next instruction file when the round asks for another round.
+      </p>
+      <p>
+        The plugin runs at most three exploration rounds. It stops the loop when a
+        decision sets <code>exploreMore</code> to false, when the round limit
+        ends, when the exploration budget ends, or when the session deadline ends.
+        Stage 4 then has the status <code>skipped</code>.
+      </p>
+
+      <h3>5. Innovation code</h3>
+      <p>
+        The Coder reads the decision and the reports, states one hypothesis, and
+        writes the innovation code. The stage uses the same
+        <code>{source,docs,inputs,outputs}</code> layout, the same library rule, and
+        the same documentation rule, and it copies the reproduction components
+        that it needs without modifying them. The <code>run_manifest.json</code>
+        adds <code>innovation_direction</code> and <code>hypothesis</code>, and
+        records the same <code>runs</code>, <code>deviceSupport</code>, and
+        <code>uv</code> fields.
+      </p>
+
+      <h3>6. Innovation report</h3>
       <p>
         The Researcher writes <code>innovation/report/report.typ</code> and
-        <code>report.pdf</code>. The report states the hypothesis, the change,
-        the minimal smoke evidence, and the remaining full-scale experiment.
+        <code>report.pdf</code>. The report clearly distinguishes the explored
+        innovation direction from the directions of the original paper, and it
+        names both in one section. It carries the same image and video rules as
+        the reproduction report.
       </p>
 
-      <h3>6. Self-evaluation and gradient</h3>
+      <h3>7. Self-evaluation, human hours, and the gradient</h3>
       <p>
-        The Evaluator writes four files into the evaluation directory. The
-        <code>evals.json</code> file holds one pair for each of the five forward
-        stages. The file has schema version 1, the session ID, and a one-sentence
-        scope. A pair has the agent, the stage, the rubric ID, the criterion,
-        the verdict, the score, the reason, the uncertainty flag, and at least
-        one evidence reference. The plugin checks every reference against an
-        existing file in the paper workspace or the app data. A supported
-        verdict scores 5, a contradicted verdict scores 1, and an insufficient
-        verdict has a null score and the uncertainty flag. The stage 6 attempt
-        fails when a score, a reason, or an evidence reference does not match
-        the record.
+        The Evaluator critically evaluates the final product of each of the five
+        tasks, task by task, and estimates the human hours of each task. The
+        <code>evals.json</code> file has schema version 2:
+      </p>
+      <pre><code>{
+  "schemaVersion": 2,
+  "sessionId": "&lt;session&gt;",
+  "scope": "The forward pass of this session.",
+  "tasks": [
+    {
+      "task": 1,
+      "stage": "runtime_setup",
+      "product": "The debugged code with pyproject.toml and main.py.",
+      "qualityScore": 4,
+      "criticalEvaluation": "The minimal run proves the import only.",
+      "humanHours": 6,
+      "humanHoursReason": "The environment work dominates the estimate.",
+      "evidence": [{ "file": "original/code/minimal_run.json", "line": 4 }]
+    }
+  ],
+  "totals": { "humanHours": 40, "humanHoursMethod": "The sum of the five task estimates." },
+  "metrics": {
+    "taskCompletionRate": 1,
+    "humanInterventionBurden": 0,
+    "delegationCompletionCostMinutes": 24
+  }
+}</code></pre>
+      <p>
+        The estimate is the highest possible underestimation, and one sentence
+        names the dominant work. A quality score runs from 0 to 5. The plugin
+        checks every evidence reference against an existing file. The
+        <code>evals.md</code> file must name each task, each numeric score as
+        <code>N/5</code>, each estimate of human hours, and the total.
       </p>
       <p>
-        The <code>rubrics.json</code> file holds the rubric entries. Each entry
-        has a fixed score map. The plugin keeps every entry from the newest
-        applied rubric. A new entry is appended only for a new task class. The
-        plugin rejects a changed or removed entry. The <code>evals.md</code>
-        file must name each stage, each rubric ID, and each numeric score as
-        <code>N/5</code>.
-      </p>
-      <p>
-        The <code>tokenCostEfficiency</code> field counts completed pairs per
-        one million billed tokens. A completed pair has a score of 3 or more.
-        The plugin recomputes the value from the history attempts and rejects a
-        mismatch. If an attempt has no token count, the status is
-        <code>partial</code> and the value is null.
-      </p>
-      <p>
-        The <code>gradient.json</code> file is the proposal for stage 7:
+        The <code>gradient.json</code> file is the proposal for stage 8:
       </p>
       <pre><code>{
   "session_id": "20261112T201500_attention",
@@ -625,25 +777,38 @@
       <p>
         The <code>feedback</code> array holds one entry for each human feedback
         record that the session received. The section "Feedback pass" below
-        describes the record.
+        describes the record. The stage writes no rubric file.
       </p>
 
-      <h3>7. Self-evolution</h3>
+      <h3>8. Self-evolution</h3>
       <p>
         A backward pass reads
         <code>evolutions/pending/&lt;session&gt;/plan.json</code>. The Evolver
         writes the next configuration revision. It must not change a stage time
-        limit, a measurement scale limit, an evaluation target, an integrity
-        rule, or an existing rubric entry. A successful pass moves the plan to
-        <code>evolutions/applied/</code> and the evaluation to
+        limit, a measurement scale limit, the exploration round limit, an
+        evaluation target, or an integrity rule. A successful pass moves the plan
+        to <code>evolutions/applied/</code> and the evaluation to
         <code>evals/applied/</code>.
+      </p>
+      <p>
+        Every file under the paper workspace uses one language specification. The
+        default specification is the non-strict mode of ASD-STE100 with academic
+        US English fallback, with one term for one concept. The optional
+        <code>--language &lt;language_and_style_specification&gt;</code> argument
+        of <code>/paperloop_forward</code>, <code>/paperloop_validate</code>, and
+        <code>/paperloop_test</code> replaces that default for the pass.
+      </p>
+      <p>
+        Every file under the app data uses the non-strict mode of ASD-STE100 with
+        academic US English fallback, without exception. The app data holds the
+        configuration, the prompts, the evaluation records, and this document.
       </p>
 
       <h2>Training backward pass</h2>
       <p>
         The command <code>/paperloop_backward</code> lists every session with a
         pending plan. The user selects one or more sessions, or selects none to
-        exit without a change. The plugin runs stage 7 for each selected
+        exit without a change. The plugin runs stage 8 for each selected
         session. A backward pass is the only action that writes a new parameters
         version from a gradient. It writes
         <code>configs_rw/v&lt;K+1&gt;/CHECKPOINT.json</code> with the parent
@@ -652,7 +817,7 @@
 
       <h2>Validation pass</h2>
       <p>
-        The command <code>/paperloop_validate</code> runs stages 1 to 6 for each
+        The command <code>/paperloop_validate</code> runs stages 1 to 7 for each
         paper and writes no gradient. The plugin writes the loss of each paper to
         <code>evals/validated/&lt;session&gt;/loss.json</code>. It then compares
         the mean loss of the pass with the best validation loss in the
@@ -681,7 +846,7 @@
 
       <h2>Test pass</h2>
       <p>
-        The command <code>/paperloop_test</code> runs stages 1 to 6 for each
+        The command <code>/paperloop_test</code> runs stages 1 to 7 for each
         paper and writes no gradient and no parameter. The plugin writes the loss
         of each paper to
         <code>evals/tested/&lt;session&gt;/loss.json</code>. It then compares the
@@ -709,7 +874,7 @@
           the session ID, the text, and the time.
         </li>
         <li>
-          The plugin runs stage 6 again with the feedback text in the prompt.
+          The plugin runs stage 8 again with the feedback text in the prompt.
           The Evaluator reads every record.
         </li>
         <li>
@@ -755,7 +920,7 @@
           <tr>
             <td><code>/paperloop backward</code></td>
             <td>
-              List pending gradients and run stage 7 for the selected sessions.
+              List pending gradients and run stage 8 for the selected sessions.
             </td>
           </tr>
           <tr>
@@ -780,7 +945,7 @@
           </tr>
           <tr>
             <td><code>/paperloop_help</code></td>
-            <td>The shortcut of the help manual.</td>
+            <td>The shortcut of the compact help page.</td>
           </tr>
           <tr>
             <td><code>/paperloop_clear_appdata</code></td>
@@ -827,7 +992,8 @@
           <tr>
             <td><code>paperloop_help</code></td>
             <td>
-              Print the help manual with the live state, or answer one question.
+              Print the command list with the live state. A <code>topics</code>
+              value asks a subagent for a detailed page of those topics.
             </td>
           </tr>
           <tr>
@@ -887,6 +1053,36 @@
         later commands keep it.
       </p>
 
+      <h2>Help page</h2>
+      <p>
+        The command <code>/paperloop_help</code> prints one compact page: the
+        usage line and one sentence for each command, the topic identifiers, and
+        the live state of this machine. The page states the stage limits, the
+        forward budget, the session count, the pending gradient count, and the
+        next step.
+      </p>
+      <p>
+        The optional argument <code>--topics &lt;topics&gt;</code> asks for
+        detail. The plugin passes the topic list and one fact sheet to a
+        subagent, and the subagent writes a Markdown page of at most 120 lines.
+        The page states only the facts of the sheet. The plugin caches the page
+        in <code>&lt;app-data&gt;/help/&lt;topics&gt;.md</code>, so a later call
+        with the same topics needs no subagent.
+      </p>
+      <pre><code>/paperloop_help
+/paperloop_help --topics forward,scale
+/paperloop_help --topics layout</code></pre>
+      <p>
+        The topic identifiers are <code>forward</code>, <code>backward</code>,
+        <code>validate</code>, <code>test</code>, <code>feedback</code>,
+        <code>help</code>, <code>clear</code>, <code>settings</code>,
+        <code>scale</code>, <code>layout</code>, <code>exploration</code>,
+        <code>evaluation</code>, <code>evolution</code>, and
+        <code>troubleshooting</code>. An unknown topic fails the command and
+        names every accepted topic. When no subagent is available, the plugin
+        prints the static summary of each requested topic.
+      </p>
+
       <h2>PaperLoop view</h2>
       <p>
         The plugin registers one <code>PaperLoop</code> tab next to Chat,
@@ -894,7 +1090,7 @@
         read-only route
         <code>GET /api/dsh-aiaa5032-paperloop-settings/state</code> and shows the
         parameters version, the loss of each split, the checkpoint table, the
-        rubric heatmap, and the sessions with the artifact paths.
+        metric heatmap, and the sessions with the artifact paths.
       </p>
       <p>
         The view is read-only. It names each file, and one button copies a path
@@ -911,11 +1107,11 @@
       <p>
         The deterministic audit computes task completion rate (TCR), human
         intervention burden (HIB), delegation completion cost (DCC) in minutes,
-        output parity, report compile rate, media validity rate, and rubric
-        agreement. Rubric agreement is the share of the five forward pairs that
-        has a rubric record. Output parity compares a minimal run only with
-        itself. A minimal run claims no computational result, so its parity
-        target is 100 percent by definition.
+        output parity, report compile rate, and media validity rate. TCR is the
+        share of the five tasks whose stages all finished with an ok or a skipped
+        status. Output parity compares a minimal run only with itself. A minimal
+        run claims no computational result, so its parity target is 100 percent
+        by definition.
       </p>
 
       <h2>Integrity rules</h2>
