@@ -84,6 +84,37 @@ code. Do not reformat an existing file in a focused change.
 - Never edit `configs_ro/v<N>/rsi.json` to make a metric pass.
 - Never report a result that the output files do not support.
 
+## Versioning
+
+This repository publishes the documentation of the plugin repository
+`aiaa5032-paperloop`. The documentation has no version number of its own. Every
+documentation tag must have a plugin tag with the same name.
+
+- Use the plugin tag as the documentation tag. Do not add a prefix, a suffix, a
+  build number, or a date. Documentation tag `v0.12.0` matches plugin tag
+  `v0.12.0`.
+- Create the documentation tag only after the plugin tag exists. Copy the name
+  from the plugin repository. Do not type the version from memory.
+- Do not move a published documentation tag. Do not delete a published
+  documentation tag.
+- A plugin tag without a documentation tag is permitted. A plugin release that
+  changes no documentation gets no documentation tag.
+- Do not tag a documentation change that no plugin tag supports. Keep an
+  untagged documentation correction untagged until the next plugin tag.
+- Keep the version in the generated pages equal to the tag. Regenerate the
+  documentation from the tagged plugin checkout, and keep that `docs/` tree.
+
+Before you publish, compare the two tag lists:
+
+```bash
+git -C ../aiaa5032-paperloop tag --list --sort=v:refname
+git tag --list --sort=v:refname
+```
+
+Each tag in the second list must occur in the first list, character for
+character. The reverse direction is not a requirement, because a plugin tag
+without a documentation tag is permitted.
+
 ## Before you return
 
 1. Run `npm run typecheck`.
