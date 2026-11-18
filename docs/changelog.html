@@ -29,10 +29,54 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.11.0 entry is the current release. The plugin
+        follow the Git tags. The 0.12.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-12-0">0.12.0</h2>
+        <p class="release-date">18 November 2026</p>
+        <p>
+          This release changes the rollback policy of the validation pass. The
+          plugin now rolls the parameters back when the validation loss grows
+          worse for several passes in a row, and not when one pass is worse than
+          the best loss. The number of passes is a setting of the plugin page.
+        </p>
+
+        <h3>Validation rollback</h3>
+        <ul>
+          <li>
+            A pass is worse when its mean loss is worse than the mean loss of the
+            pass before it by more than the tolerance. A pass that improves or
+            holds the loss sets the worse streak to zero.
+          </li>
+          <li>
+            The plugin copies the best version to a new version number when the
+            worse streak reaches the rollback threshold. The default threshold
+            is three consecutive worse passes. A rollback sets the streak to
+            zero, so the next rollback needs a new streak of worse passes.
+          </li>
+          <li>
+            The threshold accepts a whole number from 1 through 10. The field
+            <code>validationRollbackStreak</code> on the plugin settings page
+            sets it, and a field value of 0 uses the value in
+            <code>paperloop.json</code>. The read-only default is
+            <code>validation.rollbackStreak</code>, which is 3.
+          </li>
+          <li>
+            The record in <code>evals/validated/decisions.json</code> gains the
+            fields <code>worseStreak</code> and <code>streakLimit</code>. The
+            settings page shows the default threshold and the effective
+            threshold.
+          </li>
+          <li>
+            The settings bridge gains the route
+            <code>/paperloop/settings/rollback</code>, and the settings page
+            gains the panel "Validation rollback".
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-11-0">0.11.0</h2>
