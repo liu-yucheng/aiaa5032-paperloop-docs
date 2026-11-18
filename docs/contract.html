@@ -820,8 +820,8 @@
         The command <code>/paperloop_validate</code> runs stages 1 to 7 for each
         paper and writes no gradient. The plugin writes the loss of each paper to
         <code>evals/validated/&lt;session&gt;/loss.json</code>. It then compares
-        the mean loss of the pass with the best validation loss in the
-        checkpoint history:
+        the mean loss of the pass with the mean loss of the earlier validation
+        passes:
       </p>
       <ul>
         <li>
@@ -829,19 +829,29 @@
           decision is <code>baseline</code>.
         </li>
         <li>
-          A loss that is not worse than the best loss by more than the tolerance
-          keeps the parameters. The decision is <code>keep</code>.
+          A pass is worse when its mean loss is worse than the mean loss of the
+          pass before it by more than the tolerance. A worse streak below the
+          rollback threshold keeps the parameters. The decision is
+          <code>keep</code>.
         </li>
         <li>
-          A loss that is worse than the best loss by more than the tolerance
-          copies the best version to a new version number. The decision is
-          <code>rollback</code>. The plugin never deletes a version.
+          The plugin copies the best version to a new version number when the
+          worse streak reaches the rollback threshold. The decision is
+          <code>rollback</code>. The plugin never deletes a version. A rollback
+          sets the worse streak to zero.
         </li>
       </ul>
       <p>
+        The rollback threshold is the number of consecutive worse passes. The
+        default is three passes. The plugin settings page sets the threshold,
+        and the value must be a whole number from 1 through 10. A field value of
+        0 uses the value in <code>paperloop.json</code>.
+      </p>
+      <p>
         The plugin appends one record to
         <code>evals/validated/decisions.json</code>. The record names the
-        version, the run loss, the best version, the best loss, and the decision.
+        version, the run loss, the best version, the best loss, the worse
+        streak, the rollback threshold, and the decision.
       </p>
 
       <h2>Test pass</h2>
