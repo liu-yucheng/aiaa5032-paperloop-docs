@@ -1124,6 +1124,31 @@
         by definition.
       </p>
 
+      <h2>Workspace hygiene</h2>
+      <p>
+        A stage keeps a temporary file only under a directory whose basename
+        starts with a dot. The path must match <code>**/.*/</code>. The stage
+        deletes every temporary file and every temporary directory before the
+        subagent returns. The cleanup covers each <code>**/.venv/</code>
+        directory and each <code>__pycache__/</code>, <code>node_modules/</code>,
+        and <code>target/</code> directory, because a runtime creates those names
+        without a dot. It also covers each <code>*.pyc</code>,
+        <code>*.pyo</code>, <code>*.tmp</code>, <code>.DS_Store</code>,
+        <code>Thumbs.db</code>, and <code>Rplots.pdf</code> file.
+      </p>
+      <p>
+        The plugin checks the rule. After each stage it scans the original code
+        tree, the three code task trees, and the two report trees. A leftover
+        path makes the stage return RETRY, and the audit records it as the
+        <code>workspace_hygiene</code> check. The scan skips a version-control
+        directory and an editor directory, such as <code>.git/</code> and
+        <code>.vscode/</code>, and it reports at most 20 leftover paths.
+      </p>
+      <p>
+        A virtual environment is a temporary path. A later run prepares the
+        environment again with <code>uv sync</code> or <code>uv run</code>.
+      </p>
+
       <h2>Integrity rules</h2>
       <ul>
         <li>Never edit <code>configs_ro/vN/rsi.json</code> to make a metric pass.</li>
