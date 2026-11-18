@@ -29,10 +29,55 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.12.0 entry is the current release. The plugin
+        follow the Git tags. The 0.12.1 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-12-1">0.12.1</h2>
+        <p class="release-date">18 November 2026</p>
+        <p>
+          This release makes the workspace hygiene rule a requirement that the
+          plugin checks. Before this release the prompt gave the rule to every
+          subagent, and no stage and no audit measured it.
+        </p>
+
+        <h3>Workspace hygiene</h3>
+        <ul>
+          <li>
+            The temporary-file rule now names each cache directory that a runtime
+            creates without a dot: <code>__pycache__/</code>,
+            <code>node_modules/</code>, <code>target/</code>,
+            <code>.pytest_cache/</code>, <code>.mypy_cache/</code>,
+            <code>.ruff_cache/</code>, and <code>.ipynb_checkpoints/</code>. It
+            also names each scratch file pattern: <code>*.pyc</code>,
+            <code>*.pyo</code>, <code>*.tmp</code>, <code>.DS_Store</code>,
+            <code>Thumbs.db</code>, and <code>Rplots.pdf</code>.
+          </li>
+          <li>
+            The rule states that a later run prepares the environment again with
+            <code>uv sync</code> or <code>uv run</code>, because the cleanup
+            deletes every <code>.venv/</code> directory.
+          </li>
+          <li>
+            A new module <code>src/hygiene.ts</code> scans the original code
+            tree, the three code task trees, and the two report trees. A dot
+            directory is temporary unless it is an ignored name such as
+            <code>.git/</code>, <code>.github/</code>, or <code>.vscode/</code>.
+            The scan reports at most 20 leftover paths.
+          </li>
+          <li>
+            The stage gate calls the scan after each stage. A leftover path adds
+            one missing artifact to the stage result, so the stage returns RETRY
+            and the message names the paths.
+          </li>
+          <li>
+            The audit gains the check <code>workspace_hygiene</code>. Its detail
+            names every leftover path, or states that no temporary path remains.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-12-0">0.12.0</h2>
