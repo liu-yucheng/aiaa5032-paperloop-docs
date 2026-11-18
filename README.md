@@ -14,6 +14,17 @@ This repository is an implementation of AIAA5032 (taught at HKUST (GZ) in the Fa
 course project PaperLoop.
 View the documentations [at this link](https://github.com/liu-yucheng/aiaa5032-paperloop-docs).
 
+## Versions
+
+This repository holds the documentation of the plugin repository
+`aiaa5032-paperloop`. The documentation has no version of its own. Every
+version tag here must have a plugin version tag with the same name. For
+example, tag `v0.12.0` here holds the documentation of plugin tag `v0.12.0`.
+
+A plugin release that changes no documentation gets no documentation tag. A
+documentation correction that no plugin tag supports stays untagged until the
+next plugin tag.
+
 ## AI agents
 
 AI agents develop and maintain this repository. [`AGENTS.md`](./AGENTS.md) holds
