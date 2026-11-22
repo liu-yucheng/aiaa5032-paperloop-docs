@@ -29,10 +29,40 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.17.1 entry is the current release. The plugin
+        follow the Git tags. The 0.17.2 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-17-2">0.17.2</h2>
+        <p class="release-date">22 November 2026</p>
+        <p>
+          This release covers the remaining caches of the paper pipeline. The
+          0.17.1 release moved the virtual environment, the uv cache, and the
+          Python byte-code cache into the session temporary root. A stage that
+          installed a uv tool, trained a Keras model, compiled a Triton kernel,
+          cached a CUDA kernel, ran a notebook, or installed a Yarn package still
+          wrote in the user profile.
+        </p>
+
+        <h3>Nineteen variables instead of eleven</h3>
+        <ul>
+          <li>
+            The session environment now also sets <code>UV_TOOL_DIR</code>,
+            <code>UV_TOOL_BIN_DIR</code>, <code>KERAS_HOME</code>,
+            <code>TRITON_CACHE_DIR</code>, <code>CUDA_CACHE_PATH</code>,
+            <code>JUPYTER_CONFIG_DIR</code>, <code>JUPYTER_DATA_DIR</code>, and
+            <code>YARN_CACHE_FOLDER</code>. Each value points inside the session
+            temporary root.
+          </li>
+          <li>
+            The stage gate and the audit check the same nineteen names, so a text
+            file that points one of them outside the four write roots fails the
+            stage.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-17-1">0.17.1</h2>
