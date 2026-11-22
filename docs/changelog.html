@@ -29,10 +29,119 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.14.2 entry is the current release. The plugin
+        follow the Git tags. The 0.15.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-15-0">0.15.0</h2>
+        <p class="release-date">22 November 2026</p>
+        <p>
+          This release gives the loop a report that a human can read in a browser,
+          a report animation, and a loss that a version can move. A comparison of
+          two versions used to be impossible, because a resumed pass wrote no loss
+          and the loss was dominated by process gates.
+        </p>
+
+        <h3>The report page replaces the PDF</h3>
+        <ul>
+          <li>
+            The Researcher writes one standalone <code>report.html</code> page for
+            the reproduction report and for the innovation report. The page carries
+            its figures and its animations as base64 data URIs, so it opens without
+            a second file and without a network.
+          </li>
+          <li>
+            The page uses Cambria for natural language text, Cascadia Mono for
+            code, and XITS for mathematics. KaTeX renders every formula from one
+            span element with the class <code>math</code> and one script block
+            inside the page. The page needs no <code>typst</code> binary.
+          </li>
+          <li>
+            The instruction page of an exploration round is now
+            <code>instructions/round_&lt;n&gt;.html</code> with the same typography
+            and the same KaTeX rule.
+          </li>
+          <li>
+            The directory <code>report/media/</code> becomes
+            <code>report/assets/</code>, and <code>media/media.json</code> becomes
+            <code>assets/assets.json</code>.
+          </li>
+          <li>
+            An animation is a GIF file of at most 1920 by 1080 pixels, at most 10
+            seconds, and at most 15 frames per second. A figure stays a PNG or a
+            JPEG file of at most 3840 by 2160 pixels. Python with matplotlib writes
+            both. Manim is one option for a generated animation, and no stage needs
+            it.
+          </li>
+          <li>
+            The metric <code>report_compile_rate</code> becomes
+            <code>report_render_rate</code>, and <code>media_validity_rate</code>
+            becomes <code>asset_validity_rate</code>. The command
+            <code>paperloop.json</code> replaces <code>audit.runTypst</code> with
+            <code>maxImageWidth</code>, <code>maxImageHeight</code>,
+            <code>maxAnimationWidth</code>, and <code>maxAnimationHeight</code>.
+          </li>
+        </ul>
+
+        <h3>The loss measures the work</h3>
+        <ul>
+          <li>
+            A pass that writes an evaluation always records one loss, including a
+            pass that needed a resume. The plugin rewrites the validation record
+            and the test record of that pass, so the rollback streak and the test
+            verdict read a real value.
+          </li>
+          <li>
+            The scale of the loss is fixed. The plugin reads the weights from
+            <code>evaluation.aspectWeights</code> of the read-only
+            <code>rsi.json</code>, and it no longer reads the mutable Evaluator
+            configuration, so two versions produce two comparable values.
+          </li>
+          <li>
+            One loss record now holds the loss of each task, the mean of each
+            aspect, and the spread between the best task and the worst task. A
+            human sees which stage and which aspect costs the most.
+          </li>
+          <li>
+            Each proposed change names one <code>target_metric</code>, one
+            <code>expected_direction</code>, and one
+            <code>expected_change</code>. The plugin writes
+            <code>applied.json</code> and <code>effects.json</code>, measures the
+            metric before and after the change, and states whether the change met
+            its target.
+          </li>
+          <li>
+            The Evaluator and the Evolver read a new section
+            <code>Learning evidence</code>: the loss of each task, the spread, the
+            weakest aspect, the recent effects, and the number of missed changes.
+            The self-evaluation reports a stalled loop when the misses reach
+            <code>evaluation.stallStreakLimit</code>.
+          </li>
+          <li>
+            A stage that stops at its hard time limit is no longer a human
+            intervention. It records one time limit event, and a pass that needs
+            more wall-clock time stops with the status <code>pending</code> before
+            a stage that has too little time left, so
+            <code>/paperloop_resume</code> continues without a penalty.
+          </li>
+        </ul>
+
+        <h3>The view follows the loop</h3>
+        <ul>
+          <li>
+            The <code>PaperLoop</code> tab refreshes itself every five seconds and
+            never waits longer than thirty seconds.
+          </li>
+          <li>
+            New panels show the live pass with one bar for the stage and one bar
+            for the wall-clock budget, the loss of each task, the backward passes
+            with the changes that each plan wrote, and the measured effect of each
+            change.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-14-2">0.14.2</h2>
