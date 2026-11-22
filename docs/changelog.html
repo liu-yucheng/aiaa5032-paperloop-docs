@@ -29,10 +29,41 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.15.0 entry is the current release. The plugin
+        follow the Git tags. The 0.17.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-17-0">0.17.0</h2>
+        <p class="release-date">22 November 2026</p>
+        <p>
+          This release fixes the documentation website of the Coder. A link that
+          ended with a directory name worked on a web server and opened a directory
+          listing when a reader opened the website from the local file system.
+        </p>
+
+        <h3>The documentation link names the page file</h3>
+        <ul>
+          <li>
+            The Coder prompt now asks for a file name in every internal link. The
+            link <code>model.html</code> or <code>model/index.html</code> replaces
+            the link <code>model/</code> and the link <code>../model/</code>, so a
+            local reader opens the page instead of a directory listing.
+          </li>
+          <li>
+            For MkDocs, the build sets <code>use_directory_urls: false</code> in
+            <code>mkdocs.yml</code>. The build keeps the file name of each page.
+          </li>
+          <li>
+            The Coder checks every relative link before the stage returns. One
+            <code>grep</code> command lists each link that ends with a slash and each
+            link that is <code>.</code>, <code>./</code>, or an absolute path. The
+            Coder rewrites each match to the file name of its target, and the home
+            page link is <code>index.html</code>.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-15-0">0.15.0</h2>
