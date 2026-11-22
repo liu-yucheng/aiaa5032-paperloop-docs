@@ -180,14 +180,13 @@
       code/outputs/
       code/docs/index.html
       code/run_manifest.json
-      report/report.typ
-      report/report.pdf
-      report/media/media.json
-      report/media/
+      report/report.html
+      report/assets/assets.json
+      report/assets/
     exploration/
       directions/directions.md
       directions/decision.json
-      instructions/round_&lt;n&gt;.md
+      instructions/round_&lt;n&gt;.html
       code/source/&lt;package_name&gt;/
       code/inputs/
       code/outputs/
@@ -199,10 +198,9 @@
       code/outputs/
       code/docs/index.html
       code/run_manifest.json
-      report/report.typ
-      report/report.pdf
-      report/media/media.json
-      report/media/
+      report/report.html
+      report/assets/assets.json
+      report/assets/
 
 &lt;app-data&gt;/
   configs_ro/vN/{rsi.json,paperloop.json}
@@ -216,7 +214,9 @@
   evals/tested/&lt;session&gt;/{loss.json,evals.json}
   evals/tested/reports.json
   evolutions/pending/&lt;session&gt;/{plan.json,session.json}
-  evolutions/applied/&lt;session&gt;/</code></pre>
+  evolutions/applied/&lt;session&gt;/
+  applied.json
+  effects.json</code></pre>
 
       <h2>Training loop</h2>
       <p>
@@ -283,18 +283,56 @@
         Each task record carries five aspect scores: completion, correctness,
         depth, presentation, and reproducibility. The score of one task is
         <code>(1 - weakest) * sum(weight * aspect) + weakest * min(aspect)</code>,
-        and the task loss is <code>1 - score / 5</code>. The weights live in the
-        Evaluator configuration, <code>configs_rw/v&lt;N&gt;/evaluator/config.json</code>,
-        so the Evolver may adjust them. The five aspect weights sum to 1, and the
-        weight <code>weakest</code> stays from 0 to 0.5. The Evolver changes one
-        weight by at most <code>evaluation.maxWeightStep</code> of
-        <code>configs_ro/v&lt;N&gt;/rsi.json</code> in one version, so the step stays
-        inside a range that a human sets. The loss of one paper is the mean task loss over
-        the five tasks. A task without five valid aspect scores counts as 1.0. The
-        loss stays between 0 and 1. A lower loss is better. The weakest aspect
-        lowers the loss the most, so four strong aspects do not hide one weak
-        aspect. The plugin writes the loss. A subagent must not write
-        <code>loss.json</code>.
+        and the task loss is <code>1 - score / 5</code>. The five aspect weights
+        sum to 1, and the weight <code>weakest</code> stays from 0 to 0.5. A task
+        without five valid aspect scores counts as 1.0. The loss of one paper is
+        the mean task loss over the five tasks. The loss stays between 0 and 1. A
+        lower loss is better. The weakest aspect lowers the loss the most, so
+        four strong aspects do not hide one weak aspect.
+      </p>
+      <p>
+        The scale of the loss is fixed, so two versions produce two values that a
+        human can compare. The plugin reads the weights of the loss from
+        <code>evaluation.aspectWeights</code> of
+        <code>configs_ro/v&lt;N&gt;/rsi.json</code>, and no subagent changes that
+        file. The Evolver may still adjust the weights in the Evaluator
+        configuration, because those weights shape the aspect scores and not the
+        reduction. The Evolver changes one Evaluator weight by at most
+        <code>evaluation.maxWeightStep</code> in one version, so the step stays
+        inside a range that a human sets.
+      </p>
+      <p>
+        One loss record holds the part that each task contributes:
+      </p>
+      <pre><code>{
+  "sessionId": "20261122T101500_attention",
+  "split": "train",
+  "configVersion": 2,
+  "loss": 0.1644,
+  "spread": 0.32,
+  "scoredTasks": 5,
+  "tasks": [
+    { "task": 1, "score": 26.5, "loss": 0.0, "unsupported": false,
+      "aspects": { "completion": 5, "correctness": 5, "depth": 5,
+                   "presentation": 5, "reproducibility": 5 } }
+  ],
+  "aspectMeans": { "completion": 4.4, "correctness": 4.2, "depth": 3.8,
+                   "presentation": 4.6, "reproducibility": 4.0 },
+  "aspectWeights": { "completion": 0.2, "correctness": 0.2, "depth": 0.2,
+                     "presentation": 0.2, "reproducibility": 0.2, "weakest": 0.4 },
+  "at": "2026-11-22T10:20:00.000Z"
+}</code></pre>
+      <p>
+        The spread is the difference between the worst task loss and the best task
+        loss. A wide spread names the stage that costs the most, and the mean of
+        each aspect names the aspect that costs the most. The plugin writes the
+        loss. A subagent must not write <code>loss.json</code>.
+      </p>
+      <p>
+        A pass that writes an evaluation always records one loss, even when the
+        pass needed a resume. A session that writes no evaluation records no loss,
+        because it holds no quality signal. One environment fault must not roll
+        back a good parameters version.
       </p>
 
       <h2>The loop and the roles</h2>
@@ -393,9 +431,9 @@
             <td><code>reproduction_report</code></td>
             <td>Researcher</td>
             <td>
-              <code>reproduction/report/{report.typ,report.pdf,media/media.json,media/}</code>,
+              <code>reproduction/report/{report.html,assets/assets.json,assets/}</code>,
               <code>exploration/directions/decision.json</code>,
-              <code>exploration/instructions/round_&lt;n&gt;.md</code>
+              <code>exploration/instructions/round_&lt;n&gt;.html</code>
             </td>
             <td>240 s</td>
           </tr>
@@ -422,7 +460,7 @@
             <td><code>innovation_report</code></td>
             <td>Researcher</td>
             <td>
-              <code>innovation/report/{report.typ,report.pdf,media/}</code>
+              <code>innovation/report/{report.html,assets/assets.json,assets/}</code>
             </td>
             <td>180 s</td>
           </tr>
@@ -638,41 +676,70 @@
   "outputs": ["outputs/metrics.json"]
 }</code></pre>
 
-      <h3>3. Reproduction report, media, and the exploration decision</h3>
+      <h3>3. Reproduction report page, assets, and the exploration decision</h3>
       <p>
-        The Researcher writes <code>reproduction/report/report.typ</code> and
-        compiles <code>report.pdf</code>. The report is concise and critical. It
-        is about the computational results of the paper: it cites the result of
-        the paper and states which claim the minimal run supports and which claim
-        it does not test. The report must not state a paper result as reproduced.
-        It ends with a heading that names the one exploration direction that the
-        report selects.
+        The Researcher writes <code>reproduction/report/report.html</code> as one
+        standalone page. The report is concise and critical. It is about the
+        computational results of the paper: it cites the result of the paper and
+        states which claim the minimal run supports and which claim it does not
+        test. The report must not state a paper result as reproduced. The page
+        body ends with a heading that names the one exploration direction that
+        the report selects.
       </p>
       <p>
-        The report carries one or more PNG images, and the report body names each
-        media file:
+        The page opens with no network access and no second file. It carries its
+        own assets and its own typesetting code:
       </p>
       <ul>
         <li>
-          One or more PNG images generated by Python, each at most 3840 pixels
-          wide and at most 2160 pixels high.
+          Natural language text uses Cambria. Code uses Cascadia Mono.
+          Mathematics uses XITS.
         </li>
         <li>
-          No video. A video renders longer than the stage time limit allows, so the
-          plugin neither asks for one nor checks for one.
+          Every formula is one span element with the class <code>math</code>, and
+          one inline script block renders every span with KaTeX. The KaTeX style
+          text and the KaTeX code sit in the page, so the page needs no link
+          element and no script element with a source.
+        </li>
+        <li>
+          Every figure and every animation is one base64 data URI in an
+          <code>img</code> element. A relative path does not work, because the
+          page carries its own assets.
+        </li>
+        <li>
+          The text stays close to a printed report: a column near 46 em, a line
+          height near 1.5, numbered sections, and one numbered caption for each
+          asset.
         </li>
       </ul>
       <p>
-        Every media file has one title, and the report shows one of them on the
-        front page. The stage writes the media index:
+        The report carries one or more assets in <code>reproduction/report/assets/</code>,
+        and the page text names each asset file:
+      </p>
+      <ul>
+        <li>
+          A figure is a PNG file or a JPEG file, each at most 3840 pixels wide and
+          at most 2160 pixels high.
+        </li>
+        <li>
+          An animation is a GIF file, at most 1920 pixels wide, at most 1080
+          pixels high, at most 10 seconds long, and at most 15 frames per second.
+          An animation replaces a figure only when motion shows the result
+          better. Python with matplotlib writes both formats. Manim is one option
+          for a generated animation, and no stage needs it.
+        </li>
+      </ul>
+      <p>
+        Every asset file has one title, and the page shows one of them on the
+        front page. The stage writes the asset index:
       </p>
       <pre><code>{
   "items": [
-    { "file": "curve.png", "title": "Validation loss of the minimal run", "frontpage": true }
+    { "file": "curve.gif", "title": "Validation loss of the minimal run", "frontpage": true }
   ]
 }</code></pre>
       <p>
-        The report text must contain the title and the file name of every media
+        The page text must contain the title and the file name of every asset
         file.
       </p>
       <p>
@@ -689,11 +756,13 @@
 
       <p>
         When the decision asks for another round, the Researcher delegates the
-        code. It writes one instruction file in
+        code. It writes one instruction page in
         <code>exploration/instructions/</code>, named
-        <code>round_&lt;n&gt;.md</code> for the round that it asks for. The file
+        <code>round_&lt;n&gt;.html</code> for the round that it asks for. The page
         names the direction, the question of the round, the input data, the
-        expected output, and the run command. The Researcher writes no code.
+        expected output, and the run command. It is one standalone page with the
+        same typography and the same KaTeX rule as the report page. The
+        Researcher writes no code.
       </p>
 
       <h3>4. Exploration code</h3>
@@ -711,9 +780,9 @@
       <p>
         After the exploration code, the plugin runs stage 3 again. That pass
         replaces the body of the final heading with the analysis of the round,
-        compiles <code>report.pdf</code> again, rewrites
-        <code>decision.json</code> with the number of the round, and writes the
-        next instruction file when the round asks for another round.
+        rebuilds <code>report.html</code>, rewrites <code>decision.json</code>
+        with the number of the round, and writes the next instruction page when
+        the round asks for another round.
       </p>
       <p>
         The plugin runs at most three exploration rounds. It stops the loop when a
@@ -736,11 +805,11 @@
 
       <h3>6. Innovation report</h3>
       <p>
-        The Researcher writes <code>innovation/report/report.typ</code> and
-        <code>report.pdf</code>. The report clearly distinguishes the explored
+        The Researcher writes <code>innovation/report/report.html</code> as one
+        standalone page. The report clearly distinguishes the explored
         innovation direction from the directions of the original paper, and it
-        names both in one section. It carries the same PNG image rule as the
-        reproduction report.
+        names both in one section. It carries the same asset rule, the same font
+        rule, and the same KaTeX rule as the reproduction report.
       </p>
 
       <h3>7. Self-evaluation, human hours, and the gradient</h3>
@@ -801,7 +870,10 @@
       "subagent": "researcher",
       "change": "Name one testable claim in the reproduction report.",
       "reason": "The claim list was absent.",
-      "expected_effect": "A shorter review."
+      "expected_effect": "A shorter review.",
+      "target_metric": "task_completion_rate",
+      "expected_direction": "up",
+      "expected_change": 0.1
     }
   ],
   "risks": ["The report becomes longer."],
@@ -817,6 +889,25 @@
         The <code>feedback</code> array holds one entry for each human feedback
         record that the session received. The section "Feedback pass" below
         describes the record. The stage writes no rubric file.
+      </p>
+      <p>
+        Every proposed change names one target metric, one expected direction, and
+        one expected change. The plugin measures the metric before the change and
+        after the change, so a change without a target metric is unmeasurable and
+        the backward pass does not apply it. The target metric is one of
+        <code>task_completion_rate</code>, <code>human_intervention_burden</code>,
+        <code>delegation_completion_cost_minutes</code>,
+        <code>output_parity_percent</code>, <code>report_render_rate</code>,
+        <code>asset_validity_rate</code>, <code>soft_limit_overruns</code>, and
+        <code>hard_limit_stops</code>.
+      </p>
+      <p>
+        Before the Evaluator writes a gradient, it reads the learning evidence
+        that the plugin writes into the prompt: the loss of each task, the spread,
+        the mean of each aspect, the weakest aspect, the recent effects, and the
+        number of changes that missed their target. A change that already missed
+        its target is not repeated. The Evaluator states the miss in
+        <code>weakness</code> and proposes a revert or a different lever.
       </p>
 
       <h3>8. Self-evolution</h3>
@@ -904,6 +995,37 @@
         <code>unchanged</code>, <code>regressed</code>, or
         <code>baseline</code>. The plugin appends one record to
         <code>evals/tested/reports.json</code>.
+      </p>
+
+      <h2>Change effects</h2>
+      <p>
+        A parameters version is only useful when a human can see what it changed
+        and whether the change worked. The plugin writes two records for that
+        purpose:
+      </p>
+      <ul>
+        <li>
+          <code>&lt;app-data&gt;/applied.json</code> holds one record for each
+          applied plan: the session, the base version, the new version, the time,
+          and the changes that the plan wrote.
+        </li>
+        <li>
+          <code>&lt;app-data&gt;/effects.json</code> holds one record for each
+          change: the subagent, the target metric, the expected direction, the
+          expected change, the value before the change, the value after the
+          change, the difference, and the result.
+        </li>
+      </ul>
+      <p>
+        The backward pass writes each effect with an empty <code>after</code>
+        value. The next pass of the same split fills the value from the audit
+        scorecard, so the record compares the metric before the change with the
+        metric after the change. A change matches when the difference has the
+        expected sign and reaches the expected size. The plugin counts the
+        consecutive misses of one session, and the self-evaluation reports a
+        stalled loop when the count reaches
+        <code>evaluation.stallStreakLimit</code> of
+        <code>configs_ro/&lt;N&gt;/rsi.json</code>.
       </p>
 
       <h2>Feedback pass</h2>
@@ -1159,27 +1281,74 @@
         Trajectory, and Git Graph. The tab reads one projection from the
         read-only route
         <code>GET /api/dsh-aiaa5032-paperloop-settings/state</code> and shows the
-        parameters version, the loss of each split, the checkpoint table, the
-        metric heatmap, and the sessions with the artifact paths.
+        training loop of this machine.
       </p>
+      <p>
+        The view refreshes itself every five seconds, and it never waits longer
+        than thirty seconds. The projection carries the refresh interval, so the
+        page follows the value that the plugin writes. The page also moves the
+        running bars between two refreshes, because the projection names the
+        start time of each stage.
+      </p>
+      <p>
+        The view shows these panels from top to bottom:
+      </p>
+      <ul>
+        <li>
+          <b>Live passes.</b> One card for each running or just finished pass. The
+          card names the split, the status, the current stage, one bar for the
+          stage and one bar for the pass against the wall-clock budget, and the
+          seconds that each bar uses.
+        </li>
+        <li>
+          <b>Loss.</b> One row for each split and parameters version, with the
+          mean loss and the age of the record. The panel under it shows the loss
+          of each task, the spread, the number of scored tasks, and the mean of
+          each aspect, so a human sees which task and which aspect costs the most.
+        </li>
+        <li>
+          <b>Backward passes.</b> One row for each applied plan, with the base
+          version, the new version, the training loss, the time, and the changes
+          that the plan wrote.
+        </li>
+        <li>
+          <b>Measured effects.</b> One row for each change, with the target
+          metric, the expected direction, the value before the change, the value
+          after the change, the difference, and whether the change met its
+          target.
+        </li>
+        <li>
+          <b>Parameters versions and rubric.</b> The checkpoint table and the
+          heatmap of the five aspects over the versions.
+        </li>
+        <li>
+          <b>Sessions.</b> One card for each session with the eight stages of the
+          pass, the time of each stage against its limit, and the artifact paths.
+        </li>
+      </ul>
       <p>
         The view is read-only. It names each file, and one button copies a path
         to the clipboard. A browser does not open a <code>file:</code> address
-        from the Harness page, so the view does not offer a link.
+        from the Harness page, so the view does not offer a link. The Refresh
+        button requests the projection again without a delay.
       </p>
       <p>
         The projection reports only what the files on disk support. An absent
-        loss is <code>null</code>, and the view never shows an unverified
-        result.
+        loss is <code>null</code>, an effect without an after value shows an
+        empty result, and the view never shows an unverified result.
       </p>
 
       <h2>Scorecard</h2>
       <p>
         The deterministic audit computes task completion rate (TCR), human
         intervention burden (HIB), delegation completion cost (DCC) in minutes,
-        output parity, report compile rate, and media validity rate. TCR is the
+        output parity, report render rate, and asset validity rate. TCR is the
         share of the five tasks whose stages all finished with an ok or a skipped
-        status. Output parity compares a minimal run only with itself. A minimal
+        status. The report render rate is the share of the two reports whose page
+        is one valid standalone HTML page. The asset validity rate is the share of
+        figure and animation files that is readable and inside the limits. The
+        audit also reports the soft limit overruns and the hard limit stops of the
+        pass. Output parity compares a minimal run only with itself. A minimal
         run claims no computational result, so its parity target is 100 percent
         by definition.
       </p>
