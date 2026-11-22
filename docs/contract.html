@@ -69,6 +69,23 @@
           value of 0 keeps the value of
           <code>configs_ro/v&lt;N&gt;/rsi.json</code>.
         </p>
+        <p>
+          <strong>Soft limit and hard limit.</strong> Each stage has one soft time
+          limit and one hard time limit. The soft limit is the value in the prompt.
+          The hard limit is twice the soft limit. A stage may finish after its soft
+          limit and keep its result; the self-evaluation records one time limit
+          event, and the audit reports <code>soft_limit_overruns</code>. The plugin
+          stops a stage at its hard limit and starts one fresh attempt, which counts
+          as a retry; the audit reports <code>hard_limit_stops</code>.
+        </p>
+        <p>
+          <strong>Validation and repair.</strong> The stage prompt lists every rule
+          that the validator checks, with the identifier that the plugin uses. When
+          a rule fails and the subagent returned OK, the plugin continues the same
+          subagent session with one repair message that names the missing rules. A
+          repair keeps the earlier work and is not a retry. The plugin counts a
+          retry only for a RETRY result, an agent error, or a hard time limit.
+        </p>
       </div>
 
       <h2>Path symbols</h2>
@@ -262,10 +279,15 @@
         </tbody>
       </table>
       <p>
-        The loss of one paper is <code>mean(1 - qualityScore / 5)</code> over the
-        five tasks. A task without a score counts as 1.0. The loss stays
-        between 0 and 1. A lower loss is better. The plugin writes the loss. A
-        subagent must not write <code>loss.json</code>.
+        Each task record carries five aspect scores: completion, correctness,
+        depth, presentation, and reproducibility. The score of one task is
+        <code>0.6 * mean(aspects) + 0.4 * min(aspects)</code>, and the task loss is
+        <code>1 - score / 5</code>. The loss of one paper is the mean task loss over
+        the five tasks. A task without five valid aspect scores counts as 1.0. The
+        loss stays between 0 and 1. A lower loss is better. The weakest aspect
+        lowers the loss the most, so four strong aspects do not hide one weak
+        aspect. The plugin writes the loss. A subagent must not write
+        <code>loss.json</code>.
       </p>
 
       <h2>The loop and the roles</h2>
@@ -620,8 +642,8 @@
         report selects.
       </p>
       <p>
-        The report carries at least one image and at least one video, and the
-        report body names each media file:
+        The report carries at least one PNG image, one image is enough, and the
+        report body names the media file:
       </p>
       <ul>
         <li>
@@ -629,8 +651,8 @@
           2160 pixels high.
         </li>
         <li>
-          An MP4 video of at most 30 seconds at 1920 by 1080 pixels, made with
-          <code>manim</code> or another Python tool.
+          No video. A video renders longer than the stage time limit allows, so the
+          plugin neither asks for one nor checks for one.
         </li>
       </ul>
       <p>
@@ -639,8 +661,7 @@
       </p>
       <pre><code>{
   "items": [
-    { "file": "curve.png", "title": "Validation loss of the minimal run", "frontpage": true },
-    { "file": "gate.mp4", "title": "Gate activation over one batch", "frontpage": false }
+    { "file": "curve.png", "title": "Validation loss of the minimal run", "frontpage": true }
   ]
 }</code></pre>
       <p>
@@ -711,18 +732,18 @@
         The Researcher writes <code>innovation/report/report.typ</code> and
         <code>report.pdf</code>. The report clearly distinguishes the explored
         innovation direction from the directions of the original paper, and it
-        names both in one section. It carries the same image and video rules as
-        the reproduction report.
+        names both in one section. It carries the same PNG image rule as the
+        reproduction report.
       </p>
 
       <h3>7. Self-evaluation, human hours, and the gradient</h3>
       <p>
         The Evaluator critically evaluates the final product of each of the five
-        tasks, task by task, and estimates the human hours of each task. The
-        <code>evals.json</code> file has schema version 2:
+        tasks, task by task, on five quality aspects, and estimates the human hours
+        of each task. The <code>evals.json</code> file has schema version 3:
       </p>
       <pre><code>{
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "sessionId": "&lt;session&gt;",
   "scope": "The forward pass of this session.",
   "tasks": [
@@ -730,7 +751,14 @@
       "task": 1,
       "stage": "runtime_setup",
       "product": "The debugged code with pyproject.toml and main.py.",
-      "qualityScore": 4,
+      "qualityScore": 4.2,
+      "quality": {
+        "completion": 5,
+        "correctness": 4,
+        "depth": 4,
+        "presentation": 4,
+        "reproducibility": 4
+      },
       "criticalEvaluation": "The minimal run proves the import only.",
       "humanHours": 6,
       "humanHoursReason": "The environment work dominates the estimate.",
@@ -746,10 +774,12 @@
 }</code></pre>
       <p>
         The estimate is the highest possible underestimation, and one sentence
-        names the dominant work. A quality score runs from 0 to 5. The plugin
-        checks every evidence reference against an existing file. The
+        names the dominant work. Each aspect score runs from 0 to 5, and the
+        overall <code>qualityScore</code> must stay within 1.0 of the aspect mean.
+        The plugin checks every evidence reference against an existing file. The
         <code>evals.md</code> file must name each task, each numeric score as
-        <code>N/5</code>, each estimate of human hours, and the total.
+        <code>N/5</code>, the five aspect scores, each estimate of human hours, and
+        the total.
       </p>
       <p>
         The <code>gradient.json</code> file is the proposal for stage 8:
