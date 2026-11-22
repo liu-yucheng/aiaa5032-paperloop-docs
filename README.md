@@ -4,15 +4,22 @@ A DeepSeek Harness plugin for autonomous paper reproduction, critical analysis, 
 
 ## Introduction
 
-PaperLoop reproduces the computational result of one paper and writes two critical reports.
-It runs seven stages in order through five isolated subagents: runtime setup, reproduction code, reproduction report,
-innovation code, innovation report, self-evaluation, and self-evolution.
-Each stage has one explicit time limit.
+PaperLoop takes one paper PDF and a public code repository.
+It reproduces the computational result of that paper and writes two critical reports.
+A forward pass runs six stages through five isolated subagents: runtime setup, reproduction code,
+reproduction report, innovation code, innovation report, and self-evaluation.
+A backward pass runs stage 7, self-evolution, and writes the next configuration revision.
+The plugin allows 1080 seconds for a forward, validation, or test pass, and 180 seconds for a
+backward pass.
+Each stage has one soft time limit and one hard time limit of twice the soft limit.
 All subagents keep temporary files in dot-basename directories and delete them before a stage returns.
+The Coder subagent writes Python, C, C++, R, MATLAB, Fortran, TypeScript, JavaScript, or SQL.
+It refactors the reusable parts into a library under `code/source/` and generates a documentation
+website under `code/docs/`.
 The plugin scores the run with TCR, HIB, DCC, and token cost efficiency, then proposes a new configuration for the next session.
 This repository is an implementation of AIAA5032 (taught at HKUST (GZ) in the Fall 2026-2027 semester)
 course project PaperLoop.
-View the documentations [at this link](https://github.com/liu-yucheng/aiaa5032-paperloop-docs).
+View the documentation [at this link](https://github.com/liu-yucheng/aiaa5032-paperloop-docs).
 
 ## Versions
 
@@ -40,15 +47,20 @@ repository. This is a recommendation, not a technical restriction.
 
 ## Usage
 
-The plugin adds five tools and the `/paperloop` command to DeepSeek Harness.
+The plugin adds ten tools and eight commands to DeepSeek Harness.
 
 ### Requirements
 
 - DeepSeek Harness 0.2.0 or later.
 - Node.js 22.19 or later, or Node.js 24 or later.
 - `uv` for Python environments and dependencies.
-- Typst, or `uvx --from typst typst` as a fallback. The researcher must compile `report.typ` to `report.pdf`.
-- Git for the original code repository.
+- The native toolchain that the reproduced paper needs: a C, C++, or Fortran compiler, or
+  an R, MATLAB, or Node.js runtime.
+- At least one documentation generator: `pdoc` or MkDocs for Python, Doxygen for C, C++,
+  MATLAB, and Fortran, `pkgdown` for R, TypeDoc or JSDoc for TypeScript and JavaScript, and
+  SchemaSpy or `tbls` for SQL.
+- Python with matplotlib for the report figures and the report animations.
+- Git when the paper links a code repository.
 
 The plugin lists optional peer dependencies.
 It does not import them.
@@ -73,8 +85,31 @@ Then add the absolute package directory as a bundle in the DeepSeek Harness prof
 
 Do not edit the profile by hand, because the plugin manager validates the package and the bundle patch.
 
-After the bundle is enabled, call `paperloop_setup` with the paper and the repository, then call `paperloop_run`.
-A dry run shows the planned stages without starting a subagent.
+After the bundle is enabled, run `/paperloop_forward <pdf> [...]` to start one paper pass, and
+run `/paperloop_backward` to apply the pending evolution plans.
+
+The main command is `/paperloop` with the `forward`, `validate`, `test`, `feedback`,
+`backward`, `help`, or `clear` action.
+The shortcuts are `/paperloop_forward`, `/paperloop_validate`, `/paperloop_test`,
+`/paperloop_feedback`, `/paperloop_backward`, `/paperloop_help`, and
+`/paperloop_clear_appdata`.
+
+- `/paperloop_forward <pdf> [...]` runs stages 1 to 7. It writes the evaluation record to
+  `evals/pending/` and the evolution plan to `evolutions/pending/`.
+- `/paperloop_backward [<index|session> ... | --all]` runs stage 8 and writes the next
+  `configs_rw/v<N+1>/` revision.
+- `/paperloop_validate <pdf> [...]` writes the loss to `evals/validated/` and one decision.
+  A rollback needs a loss that grows worse for three consecutive passes by default.
+- `/paperloop_test <pdf> [...]` writes the loss to `evals/tested/` and one report.
+- `/paperloop_feedback --session=<index|session> --feedback=<text> [...]` adds human feedback
+  to one pending session. It re-runs the evaluator and rewrites the plan.
+- `/paperloop_help [--topics <topics>]` prints the usage line of every command and the live state.
+  With `--topics` a subagent writes one detailed page for those topics.
+- `/paperloop_clear_appdata [--yes]` deletes the app data and restores the packaged seed.
+
+The ten tools are the tool form of the eight commands.
+The tools `paperloop_status`, `paperloop_audit`, and `paperloop_config` have no command.
+Read the generated pages in [`docs/index.html`](./docs/index.html) for the full documentation.
 
 ## The PaperLoop Team
 
