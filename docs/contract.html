@@ -1209,6 +1209,54 @@
         environment again with <code>uv sync</code> or <code>uv run</code>.
       </p>
 
+      <h2>Host command policy</h2>
+      <p>
+        A host may install a command policy that checks every command before the
+        command runs, for example CC Safety Net. The policy blocks a destructive
+        command and a read of a secret file. Every stage prompt states the policy,
+        so a subagent reads the rule before it acts. The prompt states these rules.
+      </p>
+      <ul>
+        <li>
+          Delete one explicit path per command. Use <code>rm PATH</code> for a
+          file and <code>rm -r PATH</code> for a directory.
+        </li>
+        <li>
+          Never name <code>.</code>, a home directory, a root directory, a path
+          outside the paper workspace, a glob target, or a variable target.
+        </li>
+        <li>
+          Never use <code>find -delete</code>, <code>find -exec rm</code>,
+          <code>git clean -f</code>, <code>git reset --hard</code>,
+          <code>git checkout --</code>, <code>git restore</code>,
+          <code>git stash drop</code>, <code>git push --force</code>,
+          <code>git tag -d</code>, or <code>git branch -D</code>.
+        </li>
+        <li>
+          Never read <code>.env</code>, an SSH key, a cloud credential file, or a
+          configuration file of a coding CLI.
+        </li>
+        <li>
+          Never install a tool with a script that a command downloads and pipes
+          into a shell. Install the tool from a package index.
+        </li>
+        <li>
+          Run every command in the paper workspace directory, and write a long
+          command into a script file.
+        </li>
+        <li>
+          Report a blocked command in the stage result and continue with the
+          other work. Do not retry the command and do not try a variant of it.
+        </li>
+      </ul>
+      <p>
+        The plugin lists the same policy in each <code>prompt.md</code> of
+        <code>configs_rw/vN/</code>, in each stage prompt, in the app-data
+        <code>README.md</code>, and on the help page. The policy does not change a
+        validation rule: a leftover temporary path still fails the
+        <code>workspace_hygiene</code> check, and one repair message follows.
+      </p>
+
       <h2>Integrity rules</h2>
       <ul>
         <li>Never edit <code>configs_ro/vN/rsi.json</code> to make a metric pass.</li>

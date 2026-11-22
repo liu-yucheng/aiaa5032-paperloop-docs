@@ -29,10 +29,94 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.14.1 entry is the current release. The plugin
+        follow the Git tags. The 0.14.2 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-14-2">0.14.2</h2>
+        <p class="release-date">21 November 2026</p>
+        <p>
+          This release removes the friction between a stage and a host command
+          policy such as CC Safety Net. A stage prompt now states the command forms
+          that the policy blocks, and the temporary-file rule names a cleanup
+          command that the policy reads without a doubt.
+        </p>
+
+        <h3>The host command policy in every prompt</h3>
+        <ul>
+          <li>
+            The new block <code>HOST_COMMAND_RULES</code> of
+            <code>src/constants.ts</code> states the policy in one place.
+          </li>
+          <li>
+            A stage prompt holds the section <code>## Host command policy</code>.
+            Each <code>prompt.md</code> of <code>configs_rw/v&lt;N&gt;/</code> holds
+            the same section, and so does the app-data <code>README.md</code>.
+          </li>
+          <li>
+            The rules name the blocked forms: <code>find -delete</code>,
+            <code>find -exec rm</code>, <code>git clean -f</code>,
+            <code>git reset --hard</code>, <code>git checkout --</code>,
+            <code>git restore</code>, <code>git stash drop</code>,
+            <code>git push --force</code>, <code>git tag -d</code>, and
+            <code>git branch -D</code>.
+          </li>
+          <li>
+            A stage reads no <code>.env</code> file, no SSH key, no cloud
+            credential file, and no configuration file of a coding CLI, and it
+            installs a tool from a package index instead of from a downloaded
+            script.
+          </li>
+          <li>
+            A stage reports a blocked command in the stage result and continues with
+            the other work. It does not retry the command and does not try a variant
+            of it, so one policy event does not cost a stage attempt.
+          </li>
+        </ul>
+
+        <h3>Cleanup that the policy reads</h3>
+        <ul>
+          <li>
+            <code>TEMPORARY_FILE_RULES</code> deletes one explicit path per command
+            with <code>rm PATH</code> or <code>rm -r PATH</code>.
+          </li>
+          <li>
+            A cleanup command names no <code>.</code>, no home directory, no root
+            directory, no path outside the paper workspace, no glob target, and no
+            variable target.
+          </li>
+          <li>
+            The <code>workspace_hygiene</code> rule states the same form, so the
+            requirement and the stage prompt agree.
+          </li>
+          <li>
+            The help page and the contract page state the policy, so a human reads
+            the same rule as a subagent.
+          </li>
+        </ul>
+
+        <h3>Verification</h3>
+        <ul>
+          <li>
+            A test renders every stage prompt and asserts the host command policy
+            and the blocked-command rule.
+          </li>
+          <li>
+            A test renders each <code>prompt.md</code> of the five subagents and
+            asserts the policy.
+          </li>
+          <li>
+            A test asserts that the cleanup rule names one explicit path per command
+            and never <code>rm -rf</code>.
+          </li>
+          <li>
+            <code>npm run typecheck</code> is clean, <code>npm test</code> passes 91
+            tests, and <code>npm run smoke</code> passes.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-14-1">0.14.1</h2>
