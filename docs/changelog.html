@@ -29,10 +29,103 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.13.0 entry is the current release. The plugin
+        follow the Git tags. The 0.14.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-14-0">0.14.0</h2>
+        <p class="release-date">21 November 2026</p>
+        <p>
+          This release removes the video requirement, scores the deliverable
+          quality on five aspects, shows the validation rules in every stage
+          prompt, and replaces a meaningless rerun with one repair pass. Each
+          stage now has a soft time limit and a hard time limit.
+        </p>
+
+        <h3>Report media</h3>
+        <ul>
+          <li>
+            A report carries at least one PNG image at or below 3840 by 2160
+            pixels. One figure is enough.
+          </li>
+          <li>
+            The plugin asks for no video and checks for no video. Video rendering
+            took longer than the stage time limit allowed, so it caused failed
+            validations without a reason.
+          </li>
+          <li>
+            The media index, the media title, the front page flag, and the report
+            reference rules stay unchanged.
+          </li>
+        </ul>
+
+        <h3>Loss over five quality aspects</h3>
+        <ul>
+          <li>
+            Each task record carries five aspect scores from 0 to 5: completion,
+            correctness, depth, presentation, and reproducibility. The evaluation
+            record has schema version 3.
+          </li>
+          <li>
+            The score of one task is
+            <code>0.6 * mean(aspects) + 0.4 * min(aspects)</code>. The weakest
+            aspect weighs 40 percent of the score, so one weak aspect is not hidden
+            by four strong aspects and the loss separates two different products.
+          </li>
+          <li>
+            The overall <code>qualityScore</code> must stay within 1.0 of the aspect
+            mean. The audit metrics and the help page state the new formula.
+          </li>
+        </ul>
+
+        <h3>Validation rules in the prompt, and one repair pass</h3>
+        <ul>
+          <li>
+            Every stage prompt holds a section that lists the rules that the
+            validator checks, with the identifier of each rule. A subagent reads the
+            same rules that the validator applies.
+          </li>
+          <li>
+            When a rule fails and the subagent returned OK, the plugin sends one
+            repair message into the same subagent session. The message names the
+            missing rules and asks for the missing items only, so the earlier work
+            stays.
+          </li>
+          <li>
+            A repair pass is not a retry. The plugin counts a retry only for a RETRY
+            result, an agent error, or a hard time limit.
+          </li>
+        </ul>
+
+        <h3>Soft time limit and hard time limit</h3>
+        <ul>
+          <li>
+            The time limit in the prompt is the soft limit. The hard limit is twice
+            the soft limit.
+          </li>
+          <li>
+            A stage may run past the soft limit. When it completes the task, the
+            plugin keeps the result and records one time limit event, which the
+            self-evaluation counts in the human intervention burden.
+          </li>
+          <li>
+            The plugin stops a stage at the hard limit and starts one fresh attempt.
+            That attempt counts as a retry. The audit reports
+            <code>soft_limit_overruns</code> and <code>hard_limit_stops</code>.
+          </li>
+        </ul>
+
+        <h3>Verification</h3>
+        <ul>
+          <li>
+            The test suite covers the two time limits, the requirement table, the
+            rules section of a stage prompt, the repair message, the five aspect
+            scores, and the aspect consistency rule.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-13-0">0.13.0</h2>
