@@ -1359,25 +1359,60 @@
         by definition.
       </p>
 
+      <h2>Write boundary</h2>
+      <p>
+        A pass writes only under four roots: the current DSH workspace, the paper
+        sub-workspace of the session, the app data directory, and the temporary
+        directory of the system. Each stage prompt names the roots and holds the
+        shell commands that export the boundary variables.
+      </p>
+      <p>
+        One session keeps one short temporary root in the temporary directory of
+        the system, with the name <code>paperloop-&lt;session id&gt;</code>. The
+        root holds the virtual environment and each tool cache. The plugin exports
+        eleven variables, for example <code>UV_PROJECT_ENVIRONMENT</code>,
+        <code>UV_CACHE_DIR</code>, <code>PIP_CACHE_DIR</code>,
+        <code>PYTHONPYCACHEPREFIX</code>, <code>HF_HOME</code>,
+        <code>TORCH_HOME</code>, and <code>MPLCONFIGDIR</code>. A stage runs the
+        commands before the first command that installs a package. The short root
+        keeps a path below the path-length limit of a Windows device, so a stage
+        has no reason to move an environment into the user profile.
+      </p>
+      <p>
+        The plugin deletes the temporary root and each leftover temporary path of
+        the paper sub-workspace after the stage sequence of a pass. The stage gate
+        reads each text file of the paper sub-workspace. An assignment of a
+        boundary variable to a path outside the four roots makes the stage return
+        RETRY, and the audit records the same defect as the
+        <code>write_boundary</code> check.
+      </p>
+
       <h2>Workspace hygiene</h2>
       <p>
         A stage keeps a temporary file only under a directory whose basename
         starts with a dot. The path must match <code>**/.*/</code>. The stage
         deletes every temporary file and every temporary directory before the
         subagent returns. The cleanup covers each <code>**/.venv/</code>
-        directory and each <code>__pycache__/</code>, <code>node_modules/</code>,
-        and <code>target/</code> directory, because a runtime creates those names
-        without a dot. It also covers each <code>*.pyc</code>,
-        <code>*.pyo</code>, <code>*.tmp</code>, <code>.DS_Store</code>,
-        <code>Thumbs.db</code>, and <code>Rplots.pdf</code> file.
+        directory and each <code>venv/</code>, <code>__pycache__/</code>,
+        <code>node_modules/</code>, and <code>target/</code> directory, because a
+        runtime creates those names without a dot. It also covers each
+        <code>*.pyc</code>, <code>*.pyo</code>, <code>*.tmp</code>,
+        <code>.DS_Store</code>, <code>Thumbs.db</code>, and
+        <code>Rplots.pdf</code> file.
       </p>
       <p>
-        The plugin checks the rule. After each stage it scans the original code
-        tree, the three code task trees, and the two report trees. A leftover
-        path makes the stage return RETRY, and the audit records it as the
-        <code>workspace_hygiene</code> check. The scan skips a version-control
-        directory and an editor directory, such as <code>.git/</code> and
-        <code>.vscode/</code>, and it reports at most 20 leftover paths.
+        The plugin checks the rule. After each stage it scans the whole paper
+        sub-workspace. A leftover path makes the stage return RETRY, and the audit
+        records it as the <code>workspace_hygiene</code> check. The scan skips a
+        version-control directory and an editor directory, such as
+        <code>.git/</code> and <code>.vscode/</code>, it never reports the app
+        data directory, and it reports at most 20 leftover paths.
+      </p>
+      <p>
+        The plugin deletes each leftover path after the stage sequence of a pass,
+        so a pass leaves no temporary path on disk. The plugin does not delete a
+        path when the paper sub-workspace is the parent directory of the app data
+        directory, because that directory belongs to the host.
       </p>
       <p>
         A virtual environment is a temporary path. A later run prepares the
