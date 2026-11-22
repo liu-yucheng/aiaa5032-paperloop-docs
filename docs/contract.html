@@ -58,14 +58,15 @@
 
       <div class="callout">
         <p>
-          <strong>Time budget.</strong> A forward pass must finish within 30
-          minutes. The stage limits of stages 1 to 7 add up to 1140 seconds, and
-          the exploration rounds draw from a shared budget of 480 seconds, so the
-          two together stay inside the 1800-second budget. Stage 8 runs in a
-          separate backward pass and does not count against a forward pass. A
-          validation pass and a test pass keep a wall clock of 24 minutes,
-          because neither writes a gradient. A human sets each stage time limit
-          on the plugin settings page; a field value of 0 keeps the value of
+          <strong>Time budget.</strong> A forward pass must finish within 18
+          minutes. The stage limits of stages 1 to 7 add up to 780 seconds, and
+          the exploration rounds draw from a shared budget of 240 seconds, so the
+          two together stay inside the 1080-second budget. Stage 8 runs in a
+          separate backward pass, which must finish within 3 minutes. A
+          validation pass and a test pass keep the wall clock of the split
+          fraction, 14.4 minutes by default, because neither writes a gradient. A
+          human sets each stage time limit on the plugin settings page; a field
+          value of 0 keeps the value of
           <code>configs_ro/v&lt;N&gt;/rsi.json</code>.
         </p>
       </div>
@@ -423,10 +424,12 @@
         minimal run proves that the code runs without a bug. The Runtime subagent
         runs the minimal scale once and must finish within
         <code>minimalScaleSeconds</code> seconds, which is 30 by default. The
-        Coder runs the minimal scale and, when the minimal run passed, the reduced
-        scale. The reduced scale must finish within 120 seconds. The full scale is
-        a reference to the computing scale of the paper, not a strict limit, and
-        no subagent runs it.
+        Coder runs the reproduction code twice and the exploration code once, and
+        every one of those runs uses the minimal scale. No subagent runs the
+        reduced scale or the full scale, because the pass has an 18-minute wall
+        clock. The reduced scale must finish within 120 seconds and the full scale
+        is a reference to the computing scale of the paper; both stay in the entry
+        script for a human reader.
       </p>
       <table>
         <thead>
@@ -441,17 +444,18 @@
             <td><code>--minimal-scale</code></td>
             <td>30 s or less</td>
             <td>
-              The default of the main script. The Runtime subagent runs it once.
-              The Coder runs it first on a reproduction, an exploration, and an
-              innovation task.
+              The default of the main script, and the only scale that a subagent
+              runs. The Runtime subagent runs it once. The Coder runs it twice on
+              a reproduction task, twice on an innovation task, and once on an
+              exploration task.
             </td>
           </tr>
           <tr>
             <td><code>--reduced-scale</code></td>
             <td>120 s or less</td>
             <td>
-              The Coder, on a reproduction and an innovation task, after the
-              minimal run passed.
+              No subagent. The flag stays in the entry script for a human reader,
+              so the plugin can improve the scale policy without a code change.
             </td>
           </tr>
           <tr>
@@ -579,10 +583,8 @@
         default is <code>--minimal-scale</code>. It refactors the reusable parts
         into <code>reproduction/code/source/&lt;package_name&gt;/</code>,
         generates the documentation website at
-        <code>reproduction/code/docs/index.html</code>, and runs the code twice:
-        the minimal scale, then the reduced scale when the minimal run passed, and
-        the minimal scale again when it did not. <code>run_manifest.json</code>
-        holds:
+        <code>reproduction/code/docs/index.html</code>, and runs the code twice,
+        both runs at the minimal scale. <code>run_manifest.json</code> holds:
       </p>
       <pre><code>{
   "layout": "source/inputs/outputs",
@@ -598,8 +600,8 @@
   "runs": [
     { "scale": "minimal", "command": "uv run python main.py --minimal-scale",
       "seconds": 21.0, "exitCode": 0, "device": "cpu" },
-    { "scale": "reduced", "command": "uv run python main.py --reduced-scale",
-      "seconds": 94.2, "exitCode": 0, "device": "cpu" }
+    { "scale": "minimal", "command": "uv run python main.py --minimal-scale",
+      "seconds": 22.4, "exitCode": 0, "device": "cpu" }
   ],
   "deviceSupport": ["cpu", "cpu+gpu"],
   "uv": { "used": true, "command": "uv sync" },
@@ -934,6 +936,13 @@
             </td>
           </tr>
           <tr>
+            <td><code>/paperloop resume</code></td>
+            <td>
+              Continue the last session, or the named session, at the stage where
+              it stopped.
+            </td>
+          </tr>
+          <tr>
             <td><code>/paperloop_forward</code></td>
             <td>The shortcut of the training split.</td>
           </tr>
@@ -952,6 +961,13 @@
           <tr>
             <td><code>/paperloop_backward</code></td>
             <td>The shortcut of the backward pass.</td>
+          </tr>
+          <tr>
+            <td><code>/paperloop_resume</code></td>
+            <td>
+              Continue one stopped session at the stage where it stopped. A manual
+              interrupt and a network failure record no human intervention.
+            </td>
           </tr>
           <tr>
             <td><code>/paperloop_help</code></td>
@@ -983,6 +999,13 @@
           <tr>
             <td><code>paperloop_backward</code></td>
             <td>The tool form of the backward pass.</td>
+          </tr>
+          <tr>
+            <td><code>paperloop_resume</code></td>
+            <td>
+              The tool form of the manual resume. It names one session and,
+              optionally, one stage.
+            </td>
           </tr>
           <tr>
             <td><code>paperloop_status</code></td>
