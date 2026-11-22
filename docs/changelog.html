@@ -29,10 +29,97 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.14.0 entry is the current release. The plugin
+        follow the Git tags. The 0.14.1 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-14-1">0.14.1</h2>
+        <p class="release-date">21 November 2026</p>
+        <p>
+          This release allows more than one figure in a report, moves the score
+          weights of the Evaluator into the parameters, limits one weight change
+          to a fixed step, and states every time limit in seconds as a float. The
+          plugin now enforces 1080 seconds on each forward, validation, and test
+          pass and 180 seconds on each backward pass.
+        </p>
+
+        <h3>One or more figures in a report</h3>
+        <ul>
+          <li>
+            A report carries one or more PNG images. Each image stays at or below
+            3840 by 2160 pixels.
+          </li>
+          <li>
+            The media index gives every image one title, and the report names each
+            file and each title.
+          </li>
+          <li>
+            The report prompts, the validation requirements, the audit detail, and
+            the help page state the new rule.
+          </li>
+        </ul>
+
+        <h3>Score weights in the parameters</h3>
+        <ul>
+          <li>
+            The field <code>weights</code> of
+            <code>configs_rw/v&lt;N&gt;/evaluator/config.json</code> holds one weight
+            for each of the five quality aspects and the weight
+            <code>weakest</code>.
+          </li>
+          <li>
+            The score of one task is
+            <code>(1 - weakest) * sum(weight * aspect) + weakest * min(aspect)</code>.
+            The five aspect weights sum to 1, and <code>weakest</code> stays from 0
+            to 0.5.
+          </li>
+          <li>
+            <code>configs_ro/v&lt;N&gt;/rsi.json</code> holds
+            <code>evaluation.maxWeightStep</code>, which is 0.05 by default. The
+            Evolver changes one weight by at most that step in one version, and the
+            plugin rejects a larger change.
+          </li>
+          <li>
+            The loss uses the weights of the active parameters version, so a
+            gradient can lower the loss by moving a weight that the evidence
+            supports.
+          </li>
+        </ul>
+
+        <h3>Seconds as one unit and one float type</h3>
+        <ul>
+          <li>
+            Every stage time limit, scale limit, and exploration budget is a number
+            of seconds. A stored time length is a float with millisecond precision.
+          </li>
+          <li>
+            The attempt durations are <code>durationSeconds</code> instead of
+            <code>durationMilliseconds</code>.
+          </li>
+        </ul>
+
+        <h3>Enforced pass wall clock</h3>
+        <ul>
+          <li>
+            The plugin enforces 1080 seconds on each forward, validation, and test
+            pass, and 180 seconds on each backward pass.
+          </li>
+          <li>
+            <code>paperloop.json</code> no longer holds <code>maxRunMinutes</code>,
+            because the pass wall clock is a policy, not a parameter.
+          </li>
+        </ul>
+
+        <h3>Verification</h3>
+        <ul>
+          <li>
+            <code>npm run typecheck</code>, <code>npm test</code>, and
+            <code>npm run smoke</code> pass.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-14-0">0.14.0</h2>
