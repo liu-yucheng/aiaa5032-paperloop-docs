@@ -1370,10 +1370,11 @@
         One session keeps one short temporary root in the temporary directory of
         the system, with the name <code>paperloop-&lt;session id&gt;</code>. The
         root holds the virtual environment and each tool cache. The plugin exports
-        eleven variables, for example <code>UV_PROJECT_ENVIRONMENT</code>,
+        nineteen variables, for example <code>UV_PROJECT_ENVIRONMENT</code>,
         <code>UV_CACHE_DIR</code>, <code>PIP_CACHE_DIR</code>,
         <code>PYTHONPYCACHEPREFIX</code>, <code>HF_HOME</code>,
-        <code>TORCH_HOME</code>, and <code>MPLCONFIGDIR</code>. A stage runs the
+        <code>TORCH_HOME</code>, <code>MPLCONFIGDIR</code>, and
+        <code>KERAS_HOME</code>. A stage runs the
         commands before the first command that installs a package. The short root
         keeps a path below the path-length limit of a Windows device, so a stage
         has no reason to move an environment into the user profile.
