@@ -605,6 +605,12 @@
         fails on the project, and then states the reason in
         <code>run_manifest.json</code>.
       </p>
+      <p>
+        Every internal link of the website names the target file. The Coder writes
+        <code>model/index.html</code> instead of <code>model/</code>, so the website
+        also opens from the local file system. A build with MkDocs sets
+        <code>use_directory_urls: false</code>.
+      </p>
 
       <h2>Stage artifacts</h2>
 
