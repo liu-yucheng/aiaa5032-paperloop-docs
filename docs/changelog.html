@@ -29,10 +29,87 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.17.0 entry is the current release. The plugin
+        follow the Git tags. The 0.17.1 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-17-1">0.17.1</h2>
+        <p class="release-date">22 November 2026</p>
+        <p>
+          This release keeps every write inside the four roots of the plugin: the
+          current DSH workspace, the paper sub-workspace, the app data directory, and
+          the temporary directory of the system. Before the change, a Python
+          environment, a package cache, and a model cache could appear in the user
+          profile, and the plugin had no way to delete them after the pass.
+        </p>
+
+        <h3>One short temporary root holds the environment and each cache</h3>
+        <ul>
+          <li>
+            The path layout has a session temporary root at
+            <code>&lt;system temporary directory&gt;/paperloop-&lt;session id&gt;</code>.
+            The plugin creates it before the first stage and names three paths in it:
+            the virtual environment, the cache root, and the session state of the
+            environment.
+          </li>
+          <li>
+            The session exports eleven variables before the first <code>uv</code>
+            command, for example <code>UV_PROJECT_ENVIRONMENT</code>,
+            <code>UV_CACHE_DIR</code>, <code>PIP_CACHE_DIR</code>,
+            <code>PYTHONPYCACHEPREFIX</code>, <code>HF_HOME</code>,
+            <code>TORCH_HOME</code>, and <code>MPLCONFIGDIR</code>. Each value points
+            inside the session temporary root.
+          </li>
+          <li>
+            The root is short. A deep paper workspace path no longer breaks a Windows
+            device with the path-length limit, so a stage has no reason to move the
+            environment into the user profile.
+          </li>
+        </ul>
+
+        <h3>The pass deletes each temporary path when it ends</h3>
+        <ul>
+          <li>
+            The plugin deletes the session temporary root and each leftover temporary
+            path of the paper sub-workspace after the stage sequence of a pass. The
+            pass keeps its stage results when a deletion fails, and the session notes
+            record the failure.
+          </li>
+          <li>
+            A temporary directory whose name starts with a dot is the only permitted
+            scratch location inside the paper sub-workspace. The <code>venv</code>
+            directory name is now a temporary name, so a cleanup also removes an
+            environment that has no dot.
+          </li>
+          <li>
+            The hygiene scan covers the whole paper sub-workspace. It never reports
+            the app data directory and never deletes it, even when the app data
+            directory sits inside the scanned directory.
+          </li>
+        </ul>
+
+        <h3>The stage gate and the audit check the write boundary</h3>
+        <ul>
+          <li>
+            A new common requirement, <code>write_boundary</code>, states the four
+            roots and the rule of the session temporary root. The stage prompt holds
+            the rule and the shell commands that export the variables.
+          </li>
+          <li>
+            The stage gate and the artifact audit read each text file of the paper
+            sub-workspace. An assignment of a boundary variable that points outside
+            the four roots, an absolute value or an indirect value such as
+            <code>%LOCALAPPDATA%/uv</code>, fails the check and sends one repair
+            message.
+          </li>
+          <li>
+            The new <code>write_boundary</code> audit check reports the same defect in
+            the scorecard of the session.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-17-0">0.17.0</h2>
