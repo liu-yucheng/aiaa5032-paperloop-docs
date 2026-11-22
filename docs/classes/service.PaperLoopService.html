@@ -1,6 +1,6 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoopService | PaperLoop - v0.12.1</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script>    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaperLoopService | PaperLoop - v0.13.0</title><meta name="description" content="Documentation for PaperLoop"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script>    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   </head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">PaperLoop - v0.12.1</a>
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">PaperLoop - v0.13.0</a>
 <div id="tsd-toolbar-links"><a href="../contract.html">Subagent contract</a><a href="../changelog.html">Changelog</a><a href="../natural_language_styles.html">Natural language styles</a><a href="../code_styles.html">Code styles</a><a href="../fonts.html">Font regulation</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -13,7 +13,7 @@
 <li><a href="" aria-current="page">PaperLoopService</a></li></ul>
 <h1>Class PaperLoopService</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L159">service.ts:159</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L170">service.ts:170</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -30,6 +30,7 @@
 <a href="#test" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>test</span></a>
 <a href="#backward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>backward</span></a>
 <a href="#feedback" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>feedback</span></a>
+<a href="#resume" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>resume</span></a>
 <a href="#status" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>status</span></a>
 <a href="#audit" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>audit</span></a>
 <a href="#config" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>config</span></a>
@@ -61,7 +62,7 @@
 <li><span><span class="tsd-kind-parameter">readRollbackStreak</span>: <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">PaperLoopService</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L165">service.ts:165</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L176">service.ts:176</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -81,7 +82,7 @@
 <li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.ForwardResult.html" class="tsd-signature-type tsd-kind-interface">ForwardResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L178">service.ts:178</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L189">service.ts:189</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="validate"><span>validate</span><a href="#validate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -103,7 +104,7 @@ the default is three passes.</p>
 <li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.ValidationResult.html" class="tsd-signature-type tsd-kind-interface">ValidationResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L217">service.ts:217</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L228">service.ts:228</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="test"><span>test</span><a href="#test" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -122,7 +123,7 @@ the mean test loss against every earlier parameters version.</p>
 <li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.TestResult.html" class="tsd-signature-type tsd-kind-interface">TestResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L327">service.ts:327</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L338">service.ts:338</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="backward"><span>backward</span><a href="#backward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -139,7 +140,7 @@ the mean test loss against every earlier parameters version.</p>
 <li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.BackwardResult.html" class="tsd-signature-type tsd-kind-interface">BackwardResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L369">service.ts:369</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L380">service.ts:380</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="feedback"><span>feedback</span><a href="#feedback" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -159,7 +160,28 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 <li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.FeedbackResult.html" class="tsd-signature-type tsd-kind-interface">FeedbackResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L431">service.ts:431</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L442">service.ts:442</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="resume"><span>resume</span><a href="#resume" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="resume-1"><span class="tsd-kind-call-signature">resume</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">agent</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/dsh.Agent.html" class="tsd-signature-type tsd-kind-interface">Agent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.ResumeOptions.html" class="tsd-signature-type tsd-kind-interface">ResumeOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">signal</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.ResumeResult.html" class="tsd-signature-type tsd-kind-interface">ResumeResult</a><span class="tsd-signature-symbol">&gt;</span><a href="#resume-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Continue one stopped session from the stage where it stopped.</p>
+<p>A manual interrupt and a network failure record no human intervention. The pass keeps
+every stage that already has an ok status, and it runs the target stage again with a
+resume prompt that names the earlier subagent session. The pass writes no gradient unless
+it is a training session that ends with an ok status.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">agent</span>: <a href="../interfaces/dsh.Agent.html" class="tsd-signature-type tsd-kind-interface">Agent</a></span></li>
+<li><span><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/types.ResumeOptions.html" class="tsd-signature-type tsd-kind-interface">ResumeOptions</a></span></li>
+<li><span><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.ResumeResult.html" class="tsd-signature-type tsd-kind-interface">ResumeResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L496">service.ts:496</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="status"><span>status</span><a href="#status" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -175,7 +197,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 <li><span><span class="tsd-kind-parameter">appDataInput</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.StatusResult.html" class="tsd-signature-type tsd-kind-interface">StatusResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L478">service.ts:478</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L629">service.ts:629</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="audit"><span>audit</span><a href="#audit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -192,7 +214,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 <li><span><span class="tsd-kind-parameter">sessionId</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;&quot;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.AuditResult.html" class="tsd-signature-type tsd-kind-interface">AuditResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L501">service.ts:501</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L658">service.ts:658</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="config"><span>config</span><a href="#config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -211,7 +233,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 <li><span><span class="tsd-kind-parameter">valueJson</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.ConfigResult.html" class="tsd-signature-type tsd-kind-interface">ConfigResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L512">service.ts:512</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L669">service.ts:669</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="appdatarootpath"><span>app<wbr/>Data<wbr/>Root<wbr/>Path</span><a href="#appdatarootpath" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -222,7 +244,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L609">service.ts:609</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L766">service.ts:766</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="settingsinfo"><span>settings<wbr/>Info</span><a href="#settingsinfo" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -233,7 +255,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.SettingsInfo.html" class="tsd-signature-type tsd-kind-interface">SettingsInfo</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L614">service.ts:614</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L771">service.ts:771</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="seedconfiguredappdata"><span>seed<wbr/>Configured<wbr/>App<wbr/>Data</span><a href="#seedconfiguredappdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -244,7 +266,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L663">service.ts:663</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L820">service.ts:820</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resetconfiguredappdata"><span>reset<wbr/>Configured<wbr/>App<wbr/>Data</span><a href="#resetconfiguredappdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -255,7 +277,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L668">service.ts:668</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L825">service.ts:825</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clearconfiguredappdata"><span>clear<wbr/>Configured<wbr/>App<wbr/>Data</span><a href="#clearconfiguredappdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -266,7 +288,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L673">service.ts:673</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L830">service.ts:830</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="appdatainventory"><span>app<wbr/>Data<wbr/>Inventory</span><a href="#appdatainventory" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -277,7 +299,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.AppDataInventory.html" class="tsd-signature-type tsd-kind-interface">AppDataInventory</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L678">service.ts:678</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L835">service.ts:835</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="factoryresetappdata"><span>factory<wbr/>Reset<wbr/>App<wbr/>Data</span><a href="#factoryresetappdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -288,7 +310,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.AppDataInventory.html" class="tsd-signature-type tsd-kind-interface">AppDataInventory</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L708">service.ts:708</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L865">service.ts:865</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="helpsnapshot"><span>help<wbr/>Snapshot</span><a href="#helpsnapshot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -299,7 +321,7 @@ rewrites the plan in <code>evolutions/pending</code>. The pass changes no parame
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.HelpSnapshot.html" class="tsd-signature-type tsd-kind-interface">HelpSnapshot</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L714">service.ts:714</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L871">service.ts:871</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="helptopics"><span>help<wbr/>Topics</span><a href="#helptopics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -324,7 +346,7 @@ subagent. A new page comes from a subagent, so the content follows the facts of 
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/cdd8be79f65a0d49e73360446df8f0bb1b4ce794/src/service.ts#L749">service.ts:749</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/liu-yucheng/aiaa5032-paperloop/blob/1b8fd24fbc857dab1a6b52942d7bcd6765e4dd19/src/service.ts#L906">service.ts:906</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -342,10 +364,10 @@ subagent. A new page comes from a subagent, so the content follows the facts of 
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
 <div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#forward"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>forward</span></a><a href="#validate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>validate</span></a><a href="#test"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>test</span></a><a href="#backward"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>backward</span></a><a href="#feedback"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>feedback</span></a><a href="#status"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>status</span></a><a href="#audit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>audit</span></a><a href="#config"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>config</span></a><a href="#appdatarootpath"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>app<wbr/>Data<wbr/>Root<wbr/>Path</span></a><a href="#settingsinfo"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>settings<wbr/>Info</span></a><a href="#seedconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>seed<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#resetconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>reset<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#clearconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#appdatainventory"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>app<wbr/>Data<wbr/>Inventory</span></a><a href="#factoryresetappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>factory<wbr/>Reset<wbr/>App<wbr/>Data</span></a><a href="#helpsnapshot"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>help<wbr/>Snapshot</span></a><a href="#helptopics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>help<wbr/>Topics</span></a></div></details></div></details></div>
+<div><a href="#forward"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>forward</span></a><a href="#validate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>validate</span></a><a href="#test"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>test</span></a><a href="#backward"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>backward</span></a><a href="#feedback"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>feedback</span></a><a href="#resume"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>resume</span></a><a href="#status"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>status</span></a><a href="#audit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>audit</span></a><a href="#config"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>config</span></a><a href="#appdatarootpath"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>app<wbr/>Data<wbr/>Root<wbr/>Path</span></a><a href="#settingsinfo"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>settings<wbr/>Info</span></a><a href="#seedconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>seed<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#resetconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>reset<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#clearconfiguredappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear<wbr/>Configured<wbr/>App<wbr/>Data</span></a><a href="#appdatainventory"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>app<wbr/>Data<wbr/>Inventory</span></a><a href="#factoryresetappdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>factory<wbr/>Reset<wbr/>App<wbr/>Data</span></a><a href="#helpsnapshot"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>help<wbr/>Snapshot</span></a><a href="#helptopics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>help<wbr/>Topics</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav id="tsd-sidebar-links" class="tsd-navigation"><a href="../contract.html" class="tsd-nav-link">Subagent contract</a><a href="../changelog.html" class="tsd-nav-link">Changelog</a><a href="../natural_language_styles.html" class="tsd-nav-link">Natural language styles</a><a href="../code_styles.html" class="tsd-nav-link">Code styles</a><a href="../fonts.html" class="tsd-nav-link">Font regulation</a></nav>
-<nav class="tsd-navigation"><a href="../modules.html">PaperLoop - v0.12.1</a>
+<nav class="tsd-navigation"><a href="../modules.html">PaperLoop - v0.13.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer>
 <p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
