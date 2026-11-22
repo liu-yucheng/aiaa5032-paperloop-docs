@@ -29,10 +29,69 @@
       <h1>Changelog</h1>
       <p class="lede">
         This page records the user-visible change of each version. Release dates
-        follow the Git tags. The 0.12.1 entry is the current release. The plugin
+        follow the Git tags. The 0.13.0 entry is the current release. The plugin
         version is also in <code>src/constants.ts</code> and
         <code>package.json</code>.
       </p>
+
+      <article class="release">
+        <h2 id="v0-13-0">0.13.0</h2>
+        <p class="release-date">21 November 2026</p>
+        <p>
+          This release shortens the wall clock of every pass, keeps every experiment
+          at the minimal scale, adds a manual resume for a stopped stage, and makes
+          the PaperLoop tab scroll with the mouse wheel.
+        </p>
+
+        <h3>Pass wall clock</h3>
+        <ul>
+          <li>
+            A forward, validation, or test pass stops at 18 minutes. The plugin
+            checks the deadline before each retry, so a retry chain cannot exceed it.
+          </li>
+          <li>
+            A backward pass stops at 3 minutes. The stage limits of the eight stages
+            are now 120, 180, 90, 75, 150, 75, 90, and 60 seconds, and the shared
+            exploration budget is 240 seconds.
+          </li>
+          <li>
+            Every subagent runs experiment code at <code>--minimal-scale</code> only.
+            The plugin rejects a run manifest that records the reduced scale or the
+            full scale. The two other flags stay in the entry script for a human
+            reader.
+          </li>
+        </ul>
+
+        <h3>Manual resume</h3>
+        <ul>
+          <li>
+            Every stage record keeps the subagent session identifier, the provider,
+            the cause of the last stop, and the number of resumes.
+          </li>
+          <li>
+            <code>/paperloop_resume [&lt;index|session_id&gt;] [--stage &lt;id&gt;]</code>
+            continues the session at the stage where it stopped. The pass keeps every
+            stage that already has an ok status, and the prompt of the resumed stage
+            names the earlier subagent session.
+          </li>
+          <li>
+            A manual interrupt stops the stage as cancelled, and a network failure
+            stops it as a network stop. Neither one records a human intervention. An
+            agent failure, a program failure, and a time limit still record one.
+          </li>
+        </ul>
+
+        <h3>PaperLoop tab</h3>
+        <ul>
+          <li>
+            The tab root now declares
+            <code>data-conversation-composer-overlay</code> and owns the vertical
+            scroll. The host gives the view column a definite height, so the mouse
+            wheel scrolls the page instead of a hidden parent box. Dragging the
+            scrollbar is no longer the only way to move the page.
+          </li>
+        </ul>
+      </article>
 
       <article class="release">
         <h2 id="v0-12-1">0.12.1</h2>
